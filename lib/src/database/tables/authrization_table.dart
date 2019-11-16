@@ -9,11 +9,11 @@ class AuthorizationTable extends TableDb {
   @override
   String get createTable => '''
   CREATE TABLE IF NOT EXISTS $tableName (
-    user_id      INT NOT NULL,
+    user_id      INTEGER NOT NULL,
     token        TEXT,
     FOREIGN KEY (user_id)
         REFERENCES User(user_id)
-          ON UPDATE CASCADE
+          ON UPDATE RESTRICT
           ON DELETE CASCADE
   )''';
 

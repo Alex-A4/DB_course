@@ -18,14 +18,14 @@ class UserTable extends TableDb {
   @override
   String get createTable => '''
   CREATE TABLE IF NOT EXISTS $tableName (
-    user_id        INT PRIMARY KEY AUTOINCREMENT NOT NULL,
-    role           INT NOT NULL,
+    user_id        INTEGER PRIMARY KEY NOT NULL,
+    role           INTEGER NOT NULL,
     phone_number   VARCHAR(20) NOT NULL,
     first_name     VARCHAR(20) NOT NULL,
     last_name      VARCHAR(20) NOT NULL,
     password_hash  TEXT NOT NULL,
     city           TEXT,
-    price_coef     REAL,
+    price_coef     REAL
   )''';
 
   @override

@@ -1,4 +1,9 @@
 import 'package:db_course_mobile/src/database/tables/authrization_table.dart';
+import 'package:db_course_mobile/src/database/tables/category_table.dart';
+import 'package:db_course_mobile/src/database/tables/competence_table.dart';
+import 'package:db_course_mobile/src/database/tables/entry_table.dart';
+import 'package:db_course_mobile/src/database/tables/feedback_table.dart';
+import 'package:db_course_mobile/src/database/tables/subcategory_table.dart';
 import 'package:db_course_mobile/src/database/tables/user_table.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -12,9 +17,18 @@ class SalonDB {
   /// Конструктор
   SalonDB(this.path);
 
-  /// Список таблиц
+  /// Список таблиц пользователя
   final _userTable = UserTable();
   final _authTable = AuthorizationTable();
+
+  /// Список таблиц разделов и услуг
+  final _categoryTable = CategoryTable();
+  final _subcategoryTable = SubcategoryTable();
+  final _competenceTable = MasterCompetenceTable();
+
+  /// Список таблиц записи и отзывов
+  final _entryTable = EntryTable();
+  final _feedbackTable = FeedbackTable();
 
   Database _database;
 
@@ -32,9 +46,18 @@ class SalonDB {
 
     return await openDatabase(dbPath, version: 1,
         onCreate: (db, version) async {
+      /// Пользователь
       await db.execute(_userTable.createTable);
-
       await db.execute(_authTable.createTable);
+
+      /// Разделы
+      await db.execute(_categoryTable.createTable);
+      await db.execute(_subcategoryTable.createTable);
+      await db.execute(_competenceTable.createTable);
+
+      /// Записи
+      await db.execute(_entryTable.createTable);
+      await db.execute(_feedbackTable.createTable);
     });
   }
 
