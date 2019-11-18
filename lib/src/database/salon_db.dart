@@ -63,14 +63,24 @@ class SalonDB {
 
   /// Внесение в БД информации о новом пользователе.
   /// Если пользователь уже зарегистрирован, то будет выброшено исклчючение.
+  /// Если всё окей, вернёт токен.
   Future<String> signUpUser(Roles role, String phone, String name,
       String lastName, String passwordHash,
       [String city, double priceCoefficient]) async {
     assert(role != Roles.Admin);
-    final token = await _userTable
-        .signUpUser(await database, role, phone, name, lastName, passwordHash,
-            city, priceCoefficient)
-        .catchError((e) => throw e);
+    assert(role == Roles.Client ||
+        role == Roles.Master && city != null && priceCoefficient != null);
+    final token = await _userTable.signUpUser(await database, role, phone, name,
+        lastName, passwordHash, city, priceCoefficient);
+    return token;
+  }
+
+  /// Авторизация пользователя.
+  /// Если всё окей, вернёт токен, иначе выбросит ошибку
+  Future<String> logInUser(String phone, String passwordHash) async {
+    assert(passwordHash != null && phone != null);
+    final token =
+        await _userTable.logInUser(await database, phone, passwordHash);
     return token;
   }
 

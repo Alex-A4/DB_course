@@ -41,6 +41,7 @@ class UserTable extends TableDb {
 
   /// Регистрация нового пользователя.
   /// Если пользователь уже зарегистрирован, то будет выброшено исклчючение.
+  /// Если всё окей, вернёт токен.
   Future<String> signUpUser(
       Database db,
       Roles role,
@@ -57,20 +58,50 @@ class UserTable extends TableDb {
     if (oldUser.isNotEmpty) throw Exception('User already exists');
 
     final auth = AuthorizationTable();
-    final token = await db.rawQuery('''
-    INSERT INTO $tableName ($tableColumns)
-    VALUES (${role.index}, $phone, $name, $lastName, $passwordHash, 
-    $city, $priceCoefficient);
 
+    await db.rawInsert('''
+    INSERT INTO $tableName ($tableColumns)
+    VALUES (${role.index}, "$phone", "$name", "$lastName", "$passwordHash", 
+    ${'"$city"' ?? 'NULL'}, ${'"$priceCoefficient"' ?? 'NULL'});
+    ''');
+
+    await db.rawInsert('''
     INSERT INTO ${auth.tableName} (${auth.tableColumns})
-    VALUES (SELECT last_insert_rowid() from $tableName, ${Uuid().v4()});
-    
-    SELECT last_insert_rowid() from ${auth.tableName};
+    VALUES ((SELECT MAX(user_id) from $tableName ), "${Uuid().v4()}");
+    ''');
+
+    final token = await db.rawQuery('''
+    SELECT token from ${auth.tableName} WHERE 
+    user_id = (SELECT MAX(user_id) from ${auth.tableName});
     ''');
 
     print(token);
 
     return token.first['token'];
+  }
+
+  /// Авторизация пользователя в системе
+  /// Если пароль или номер неправильные, будет выброшено исключение.
+  /// Если всё окей, то вернёт токен.
+  Future<String> logInUser(Database db, String phone, String password) async {
+    final oldUser = await db.rawQuery('''
+    SELECT * FROM $tableName WHERE phone_number = "$phone";
+    ''');
+
+    if (oldUser.isEmpty) throw Exception('User not exists');
+    if (oldUser.first['password_hash'] != password)
+      throw Exception('Wrong password');
+
+    final token = Uuid().v4();
+    final auth = AuthorizationTable();
+
+    await db.rawInsert('''
+    UPDATE ${auth.tableName}
+    SET token = "$token"
+    WHERE user_id == ${oldUser.first['user_id']};
+    ''');
+
+    return token;
   }
 }
 
