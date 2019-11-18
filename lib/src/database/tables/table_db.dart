@@ -2,5 +2,10 @@
 /// настройки, такие как запрос создания таблицы.
 abstract class TableDb {
   String get tableName;
+
   String get createTable;
+
+  /// Список столбцов через запятую, которые содержатся в таблице, не включая
+  /// главный ключ с автоинкрементом.
+  String get tableColumns;
 }

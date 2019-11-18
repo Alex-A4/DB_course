@@ -28,4 +28,7 @@ class SubcategoryTable extends TableDb {
 
   @override
   String get tableName => 'Subcategory';
+
+  @override
+  String get tableColumns => 'category_id, name, base_price, execution_time';
 }

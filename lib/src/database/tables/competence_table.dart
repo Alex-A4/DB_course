@@ -14,4 +14,7 @@ class MasterCompetenceTable extends TableDb {
 
   @override
   String get tableName => 'MasterCompetence';
+
+  @override
+  String get tableColumns => 'subcategory_id, user_id';
 }

@@ -19,4 +19,7 @@ class AuthorizationTable extends TableDb {
 
   @override
   String get tableName => 'Auth';
+
+  @override
+  String get tableColumns => 'user_id, token';
 }

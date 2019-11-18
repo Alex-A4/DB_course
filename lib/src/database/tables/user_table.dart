@@ -1,4 +1,7 @@
+import 'package:db_course_mobile/src/database/tables/authrization_table.dart';
 import 'package:db_course_mobile/src/database/tables/table_db.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 /// Таблица пользователя, является хранилищем информации о пользователе.
 class UserTable extends TableDb {
@@ -30,6 +33,45 @@ class UserTable extends TableDb {
 
   @override
   String get tableName => 'User';
+
+  @override
+  String get tableColumns => '''
+  role, phone_number, first_name, last_name, password_hash, city, price_coef
+  ''';
+
+  /// Регистрация нового пользователя.
+  /// Если пользователь уже зарегистрирован, то будет выброшено исклчючение.
+  Future<String> signUpUser(
+      Database db,
+      Roles role,
+      String phone,
+      String name,
+      String lastName,
+      String passwordHash,
+      String city,
+      double priceCoefficient) async {
+    final oldUser = await db.rawQuery('''
+    SELECT * from $tableName WHERE phone_number = $phone;
+    ''');
+
+    if (oldUser.isNotEmpty) throw Exception('User already exists');
+
+    final auth = AuthorizationTable();
+    final token = await db.rawQuery('''
+    INSERT INTO $tableName ($tableColumns)
+    VALUES (${role.index}, $phone, $name, $lastName, $passwordHash, 
+    $city, $priceCoefficient);
+
+    INSERT INTO ${auth.tableName} (${auth.tableColumns})
+    VALUES (SELECT last_insert_rowid() from $tableName, ${Uuid().v4()});
+    
+    SELECT last_insert_rowid() from ${auth.tableName};
+    ''');
+
+    print(token);
+
+    return token.first['token'];
+  }
 }
 
 /// Роли, которые распределяются среди пользователей

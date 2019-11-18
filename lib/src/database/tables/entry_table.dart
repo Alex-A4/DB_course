@@ -29,4 +29,7 @@ class EntryTable extends TableDb {
 
   @override
   String get tableName => 'Entry';
+
+  @override
+  String get tableColumns => 'master_id, client_id, subcategory_id, entry_date';
 }

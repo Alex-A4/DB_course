@@ -13,4 +13,7 @@ class CategoryTable extends TableDb {
 
   @override
   String get tableName => 'Category';
+
+  @override
+  String get tableColumns => 'name';
 }

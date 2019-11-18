@@ -20,4 +20,7 @@ class FeedbackTable extends TableDb {
 
   @override
   String get tableName => 'Feedback';
+
+  @override
+  String get tableColumns => 'entry_id, feedback_time, feedback_text';
 }

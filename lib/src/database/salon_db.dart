@@ -61,6 +61,19 @@ class SalonDB {
     });
   }
 
+  /// Внесение в БД информации о новом пользователе.
+  /// Если пользователь уже зарегистрирован, то будет выброшено исклчючение.
+  Future<String> signUpUser(Roles role, String phone, String name,
+      String lastName, String passwordHash,
+      [String city, double priceCoefficient]) async {
+    assert(role != Roles.Admin);
+    final token = await _userTable
+        .signUpUser(await database, role, phone, name, lastName, passwordHash,
+            city, priceCoefficient)
+        .catchError((e) => throw e);
+    return token;
+  }
+
   /// Закрытие БД
   void close() => _database?.close();
 }
