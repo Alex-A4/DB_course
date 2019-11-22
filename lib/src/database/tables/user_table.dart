@@ -1,5 +1,6 @@
 import 'package:db_course_mobile/src/database/tables/authrization_table.dart';
 import 'package:db_course_mobile/src/database/tables/table_db.dart';
+import 'package:db_course_mobile/src/models/user.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
 
@@ -102,6 +103,18 @@ class UserTable extends TableDb {
     ''');
 
     return token;
+  }
+
+  /// Верификация пользователя по токену.
+  /// Если пользователь не существует, то будет выброшена ошибка
+  Future<User> verifyUser(
+      Database db, String token, AuthorizationTable auth) async {
+    final userData = await db.rawQuery('''
+    SELECT * FROM $tableName WHERE 
+    id = (SELECT id FROM ${auth.tableName} WHERE token = "$token");
+    ''');
+    if (userData.isEmpty) throw Exception('Token not exists');
+    return User.fromData(userData.first);
   }
 }
 

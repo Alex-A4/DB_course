@@ -5,6 +5,7 @@ import 'package:db_course_mobile/src/database/tables/entry_table.dart';
 import 'package:db_course_mobile/src/database/tables/feedback_table.dart';
 import 'package:db_course_mobile/src/database/tables/subcategory_table.dart';
 import 'package:db_course_mobile/src/database/tables/user_table.dart';
+import 'package:db_course_mobile/src/models/user.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -82,6 +83,33 @@ class SalonDB {
     final token =
         await _userTable.logInUser(await database, phone, passwordHash);
     return token;
+  }
+
+  /// Добавление категории в БД
+  Future<void> addCategory(String name) async {
+    assert(name != null);
+    await _categoryTable.addCategory(await database, name);
+  }
+
+  /// Добавляем подкатегорию в БД
+  Future<void> addSubcategory(
+      String name, String categoryName, double price, int time) async {
+    assert(name != null && categoryName != null);
+    await _subcategoryTable.addSubcategory(
+        await database, name, categoryName, price, time, _categoryTable);
+  }
+
+  /// Добавление компетенции мастеру
+  Future<void> addMasterCompetence(String phone, String subcategoryName) async {
+    await _competenceTable.addCompetenceToMaster(
+        await database, phone, subcategoryName, _subcategoryTable, _userTable);
+  }
+
+  /// Верификация пользователя по токену
+  /// Если пользователь существует, то будет возвращен его объект, иначе
+  /// будет брошена ошибка.
+  Future<User> verifyUser(String token) async {
+    return await _userTable.verifyUser(await database, token, _authTable);
   }
 
   /// Закрытие БД

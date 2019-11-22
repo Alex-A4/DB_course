@@ -1,4 +1,6 @@
+import 'package:db_course_mobile/src/database/tables/category_table.dart';
 import 'package:db_course_mobile/src/database/tables/table_db.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 /// Таблица подкатегорий, является нижним уровнем в иерархии категорий,
 /// описывает конкретные процедуры и их параметры.
@@ -31,4 +33,16 @@ class SubcategoryTable extends TableDb {
 
   @override
   String get tableColumns => 'category_id, name, base_price, execution_time';
+
+  /// Добавляем подкатегорию в БД
+  Future<void> addSubcategory(Database db, String name, String categoryName,
+      double price, int time, CategoryTable category) async {
+    await db.rawInsert('''
+    INSERT INTO $tableName (category_id, name, base_price, execution_time)
+    VALUES (
+    (SELECT id FROM ${category.tableName} WHERE name = "$categoryName" COUNT 1),
+    "$name", $price, $time
+    );
+    ''');
+  }
 }
