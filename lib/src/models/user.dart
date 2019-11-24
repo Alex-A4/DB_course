@@ -28,5 +28,5 @@ class User {
   }
 
   @override
-  String toString() => '$id $phone $name';
+  String toString() => '$id $phone $name $token';
 }
