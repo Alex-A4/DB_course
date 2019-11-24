@@ -65,24 +65,24 @@ class SalonDB {
   /// Внесение в БД информации о новом пользователе.
   /// Если пользователь уже зарегистрирован, то будет выброшено исклчючение.
   /// Если всё окей, вернёт токен.
-  Future<String> signUpUser(Roles role, String phone, String name,
+  Future<User> signUpUser(Roles role, String phone, String name,
       String lastName, String passwordHash,
       [String city, double priceCoefficient]) async {
     assert(role != Roles.Admin);
     assert(role == Roles.Client ||
         role == Roles.Master && city != null && priceCoefficient != null);
-    final token = await _userTable.signUpUser(await database, role, phone, name,
+    final user = await _userTable.signUpUser(await database, role, phone, name,
         lastName, passwordHash, city, priceCoefficient);
-    return token;
+    return user;
   }
 
   /// Авторизация пользователя.
   /// Если всё окей, вернёт токен, иначе выбросит ошибку
-  Future<String> logInUser(String phone, String passwordHash) async {
+  Future<User> logInUser(String phone, String passwordHash) async {
     assert(passwordHash != null && phone != null);
-    final token =
+    final user =
         await _userTable.logInUser(await database, phone, passwordHash);
-    return token;
+    return user;
   }
 
   /// Добавление категории в БД
@@ -100,15 +100,14 @@ class SalonDB {
   }
 
   /// Добавление компетенции мастеру
-  Future<void> addMasterCompetence(String phone, String subcategoryName) async {
+  Future<void> addMasterCompetence(int userId, int subcategoryId) async {
     await _competenceTable.addCompetenceToMaster(
-        await database, phone, subcategoryName, _subcategoryTable, _userTable);
+        await database, userId, subcategoryId);
   }
 
   /// Верификация пользователя по токену
-  /// Если пользователь существует, то будет возвращен его объект, иначе
-  /// будет брошена ошибка.
-  Future<User> verifyUser(String token) async {
+  /// Если верификация не пройдена, то будет возвращен false, иначе true
+  Future<bool> verifyUser(String token) async {
     return await _userTable.verifyUser(await database, token, _authTable);
   }
 

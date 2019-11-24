@@ -22,18 +22,10 @@ class MasterCompetenceTable extends TableDb {
   String get tableColumns => 'subcategory_id, user_id';
 
   Future<void> addCompetenceToMaster(
-      Database db,
-      String phone,
-      String subcategoryName,
-      SubcategoryTable subcategory,
-      UserTable user) async {
+      Database db, int userId, int subcategoryId) async {
     await db.rawInsert('''
     INSERT INTO $tableName (subcategory_id, user_id)
-    VALUES(
-    (SELECT subcategory_id FROM ${subcategory.tableName} WHERE 
-    name = "$subcategoryName" COUNT 1),
-    (SELECT user_id FROM ${user.tableName} WHERE phone_number = "$phone" COUNT 1)
-    );
+    VALUES($subcategoryId, $userId);
     ''');
   }
 }

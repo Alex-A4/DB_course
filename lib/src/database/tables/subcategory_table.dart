@@ -40,7 +40,7 @@ class SubcategoryTable extends TableDb {
     await db.rawInsert('''
     INSERT INTO $tableName (category_id, name, base_price, execution_time)
     VALUES (
-    (SELECT id FROM ${category.tableName} WHERE name = "$categoryName" COUNT 1),
+    (SELECT category_id FROM ${category.tableName} WHERE name = "$categoryName" LIMIT 1),
     "$name", $price, $time
     );
     ''');
