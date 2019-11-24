@@ -9,9 +9,10 @@ class User {
   final String lastName;
   final String city;
   final double priceCoef;
+  final String token;
 
   User(this.id, this.role, this.phone, this.name, this.lastName, this.city,
-      this.priceCoef);
+      this.priceCoef, this.token);
 
   factory User.fromData(Map<String, dynamic> data) {
     return User(
@@ -21,7 +22,11 @@ class User {
       data['first_name'],
       data['last_name'],
       data['city'],
-      data['price_coef'],
+      data['price_coef'] == 'null' ? null : data['price_coef'],
+      data['token'],
     );
   }
+
+  @override
+  String toString() => '$id $phone $name';
 }
