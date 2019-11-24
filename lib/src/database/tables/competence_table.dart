@@ -13,6 +13,7 @@ class MasterCompetenceTable extends TableDb {
     subcategory_id    INTEGER NOT NULL,
     user_id           INTEGER NOT NULL,
     PRIMARY KEY(user_id, subcategory_id)
+      ON CONFLICT IGNORE;
   )''';
 
   @override
@@ -21,8 +22,13 @@ class MasterCompetenceTable extends TableDb {
   @override
   String get tableColumns => 'subcategory_id, user_id';
 
-  Future<void> addCompetenceToMaster(
-      Database db, int userId, int subcategoryId) async {
+  Future<void> addCompetenceToMaster(Database db, int userId, int subcategoryId,
+      UserTable user, SubcategoryTable subcategory) async {
+    final master = await db.rawQuery('''
+    SELECT role FROM ${user.tableName} WHERE user_id = $userId LIMIT 1;
+    ''');
+    if (master.first['role'] == 1) throw Exception('Wrong user role');
+
     await db.rawInsert('''
     INSERT INTO $tableName (subcategory_id, user_id)
     VALUES($subcategoryId, $userId);

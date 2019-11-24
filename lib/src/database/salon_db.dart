@@ -102,7 +102,7 @@ class SalonDB {
   /// Добавление компетенции мастеру
   Future<void> addMasterCompetence(int userId, int subcategoryId) async {
     await _competenceTable.addCompetenceToMaster(
-        await database, userId, subcategoryId);
+        await database, userId, subcategoryId, _userTable, _subcategoryTable);
   }
 
   /// Верификация пользователя по токену
