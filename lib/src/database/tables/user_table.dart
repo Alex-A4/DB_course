@@ -43,7 +43,7 @@ class UserTable extends TableDb {
   /// Регистрация нового пользователя.
   /// Если пользователь уже зарегистрирован, то будет выброшено исклчючение.
   /// Если всё окей, вернёт токен.
-  Future<String> signUpUser(
+  Future<User> signUpUser(
       Database db,
       Roles role,
       String phone,
@@ -60,7 +60,7 @@ class UserTable extends TableDb {
 
     final auth = AuthorizationTable();
 
-    await db.rawInsert('''
+    final id = await db.rawInsert('''
     INSERT INTO $tableName ($tableColumns)
     VALUES (${role.index}, "$phone", "$name", "$lastName", "$passwordHash", 
     ${'"$city"' ?? 'NULL'}, ${'"$priceCoefficient"' ?? 'NULL'});
@@ -71,20 +71,20 @@ class UserTable extends TableDb {
     VALUES ((SELECT MAX(user_id) from $tableName ), "${Uuid().v4()}");
     ''');
 
-    final token = await db.rawQuery('''
-    SELECT token from ${auth.tableName} WHERE 
-    user_id = (SELECT MAX(user_id) from ${auth.tableName});
+    final data = await db.rawQuery('''
+    SELECT a.user_id, $tableColumns, a.token FROM $tableName
+      INNER JOIN ${auth.tableName} as a ON
+        $tableName.user_id = a.user_id
+      WHERE a.user_id = $id
     ''');
 
-    print(token);
-
-    return token.first['token'];
+    return User.fromData(data.first);
   }
 
   /// Авторизация пользователя в системе
   /// Если пароль или номер неправильные, будет выброшено исключение.
   /// Если всё окей, то вернёт токен.
-  Future<String> logInUser(Database db, String phone, String password) async {
+  Future<User> logInUser(Database db, String phone, String password) async {
     final oldUser = await db.rawQuery('''
     SELECT * FROM $tableName WHERE phone_number = "$phone";
     ''');
@@ -102,19 +102,29 @@ class UserTable extends TableDb {
     WHERE user_id == ${oldUser.first['user_id']};
     ''');
 
-    return token;
+    final data = await db.rawQuery('''
+    SELECT a.user_id, $tableColumns, a.token FROM $tableName
+      INNER JOIN ${auth.tableName} as a ON
+        a.user_id = $tableName.user_id
+      WHERE a.token = "$token";
+    ''');
+
+    return User.fromData(data.first);
   }
 
   /// Верификация пользователя по токену.
-  /// Если пользователь не существует, то будет выброшена ошибка
-  Future<User> verifyUser(
+  /// Если пользователь не существует или токен не верный, то вернёт false,
+  /// иначе true
+  Future<bool> verifyUser(
       Database db, String token, AuthorizationTable auth) async {
     final userData = await db.rawQuery('''
-    SELECT * FROM $tableName WHERE 
-    id = (SELECT id FROM ${auth.tableName} WHERE token = "$token");
+    SELECT u.user_id FROM $tableName as u
+      INNER JOIN ${auth.tableName} as a ON
+        u.user_id = a.user_id 
+      WHERE a.token = "$token";
     ''');
-    if (userData.isEmpty) throw Exception('Token not exists');
-    return User.fromData(userData.first);
+    if (userData.isEmpty) return false;
+    return true;
   }
 }
 
