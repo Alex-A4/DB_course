@@ -35,14 +35,11 @@ class SubcategoryTable extends TableDb {
   String get tableColumns => 'category_id, name, base_price, execution_time';
 
   /// Добавляем подкатегорию в БД
-  Future<void> addSubcategory(Database db, String name, String categoryName,
+  Future<void> addSubcategory(Database db, String name, int categoryId,
       double price, int time, CategoryTable category) async {
     await db.rawInsert('''
     INSERT INTO $tableName (category_id, name, base_price, execution_time)
-    VALUES (
-    (SELECT category_id FROM ${category.tableName} WHERE name = "$categoryName" LIMIT 1),
-    "$name", $price, $time
-    );
+    VALUES ($categoryId, "$name", $price, $time);
     ''');
   }
 }

@@ -1,6 +1,7 @@
 import 'package:db_course_mobile/src/database/tables/subcategory_table.dart';
 import 'package:db_course_mobile/src/database/tables/table_db.dart';
 import 'package:db_course_mobile/src/database/tables/user_table.dart';
+import 'package:db_course_mobile/src/models/subcategory.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// Таблица компетенции мастеров в каких-либо услугах.
@@ -22,6 +23,7 @@ class MasterCompetenceTable extends TableDb {
   @override
   String get tableColumns => 'subcategory_id, user_id';
 
+  /// Добавляем мастеру компетенцию
   Future<void> addCompetenceToMaster(Database db, int userId, int subcategoryId,
       UserTable user, SubcategoryTable subcategory) async {
     final master = await db.rawQuery('''
@@ -33,5 +35,21 @@ class MasterCompetenceTable extends TableDb {
     INSERT INTO $tableName (subcategory_id, user_id)
     VALUES($subcategoryId, $userId);
     ''');
+  }
+
+  /// Получаем список компетенций мастера
+  Future<List<Subcategory>> getMasterCompetence(Database db, int masterId,
+      UserTable userTable, SubcategoryTable subcategory) async {
+    final list = await db.rawQuery('''
+    SELECT * FROM ${subcategory.tableName}
+      INNER JOIN $tableName as c ON  
+        c.user_id = $masterId AND 
+        ${subcategory.tableName}.subcategory_id = c.subcategory_id;
+    ''');
+
+    return list
+        .map((e) => Subcategory.fromData(e))
+        .cast<Subcategory>()
+        .toList();
   }
 }

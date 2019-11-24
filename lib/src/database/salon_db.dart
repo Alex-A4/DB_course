@@ -5,6 +5,7 @@ import 'package:db_course_mobile/src/database/tables/entry_table.dart';
 import 'package:db_course_mobile/src/database/tables/feedback_table.dart';
 import 'package:db_course_mobile/src/database/tables/subcategory_table.dart';
 import 'package:db_course_mobile/src/database/tables/user_table.dart';
+import 'package:db_course_mobile/src/models/subcategory.dart';
 import 'package:db_course_mobile/src/models/user.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -93,10 +94,10 @@ class SalonDB {
 
   /// Добавляем подкатегорию в БД
   Future<void> addSubcategory(
-      String name, String categoryName, double price, int time) async {
-    assert(name != null && categoryName != null);
+      String name, int categoryId, double price, int time) async {
+    assert(name != null && categoryId != null);
     await _subcategoryTable.addSubcategory(
-        await database, name, categoryName, price, time, _categoryTable);
+        await database, name, categoryId, price, time, _categoryTable);
   }
 
   /// Добавление компетенции мастеру
@@ -109,6 +110,11 @@ class SalonDB {
   /// Если верификация не пройдена, то будет возвращен false, иначе true
   Future<bool> verifyUser(String token) async {
     return await _userTable.verifyUser(await database, token, _authTable);
+  }
+
+  Future<List<Subcategory>> getMasterCompetences(int masterId) async {
+    return await _competenceTable.getMasterCompetence(
+        await database, masterId, _userTable, _subcategoryTable);
   }
 
   /// Закрытие БД
