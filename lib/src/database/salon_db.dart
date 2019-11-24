@@ -112,9 +112,26 @@ class SalonDB {
     return await _userTable.verifyUser(await database, token, _authTable);
   }
 
+  /// Получаем список компетенций мастера, которые он может выполнить.
   Future<List<Subcategory>> getMasterCompetences(int masterId) async {
     return await _competenceTable.getMasterCompetence(
         await database, masterId, _userTable, _subcategoryTable);
+  }
+
+  /// Получаем список мастеров
+  Future<List<User>> getMasters() async {
+    return await _userTable.getMasters(await database);
+  }
+
+  /// Получаем список мастеров по городу
+  Future<List<User>> getMastersByCity(String city) async {
+    return await _userTable.getMastersByCity(await database, city);
+  }
+
+  /// Получаем список мастеров по компетенции
+  Future<List<User>> getMastersByCompetence(int subcategoryId) async {
+    return await _userTable.getMastersByCompetence(
+        await database, subcategoryId, _competenceTable);
   }
 
   /// Закрытие БД

@@ -1,4 +1,5 @@
 import 'package:db_course_mobile/src/database/tables/authrization_table.dart';
+import 'package:db_course_mobile/src/database/tables/competence_table.dart';
 import 'package:db_course_mobile/src/database/tables/table_db.dart';
 import 'package:db_course_mobile/src/models/user.dart';
 import 'package:sqflite/sqflite.dart';
@@ -125,6 +126,39 @@ class UserTable extends TableDb {
     ''');
     if (userData.isEmpty) return false;
     return true;
+  }
+
+  /// Получаем список мастеров
+  Future<List<User>> getMasters(Database db) async {
+    final users = await db.rawQuery('''
+    SELECT * FROM $tableName WHERE role = 0
+    ORDER BY city ASC;
+    ''');
+
+    return users.map((u) => User.fromData(u)).cast<User>().toList();
+  }
+
+  /// Получаем список мастеров в указанном городе
+  Future<List<User>> getMastersByCity(Database db, String city) async {
+    final users = await db.rawQuery('''
+    SELECT * FROM $tableName WHERE role = 0 AND city = "$city";
+    ''');
+
+    return users.map((u) => User.fromData(u)).cast<User>().toList();
+  }
+
+  /// Получаем список мастеров с указанной компетенцией.
+  Future<List<User>> getMastersByCompetence(
+      Database db, int subcategoryId, MasterCompetenceTable competence) async {
+    final users = await db.rawQuery('''
+    SELECT * FROM $tableName 
+      INNER JOIN ${competence.tableName} as c ON
+        c.user_id = $tableName.user_id AND c.subcategory_id = $subcategoryId
+    WHERE role = 0
+    ORDER BY $tableName.city ASC;
+    ''');
+
+    return users.map((u) => User.fromData(u)).cast<User>().toList();
   }
 }
 
