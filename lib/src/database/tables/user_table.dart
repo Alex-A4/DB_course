@@ -116,16 +116,16 @@ class UserTable extends TableDb {
   /// Верификация пользователя по токену.
   /// Если пользователь не существует или токен не верный, то вернёт false,
   /// иначе true
-  Future<bool> verifyUser(
+  Future<User> verifyUser(
       Database db, String token, AuthorizationTable auth) async {
     final userData = await db.rawQuery('''
-    SELECT u.user_id FROM $tableName as u
+    SELECT u.user_id, $tableColumns, a.token FROM $tableName as u
       INNER JOIN ${auth.tableName} as a ON
         u.user_id = a.user_id 
       WHERE a.token = "$token";
     ''');
-    if (userData.isEmpty) return false;
-    return true;
+    if (userData.isEmpty) return null;
+    return User.fromData(userData.first);
   }
 
   /// Получаем список мастеров

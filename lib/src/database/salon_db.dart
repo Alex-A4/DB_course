@@ -5,6 +5,7 @@ import 'package:db_course_mobile/src/database/tables/entry_table.dart';
 import 'package:db_course_mobile/src/database/tables/feedback_table.dart';
 import 'package:db_course_mobile/src/database/tables/subcategory_table.dart';
 import 'package:db_course_mobile/src/database/tables/user_table.dart';
+import 'package:db_course_mobile/src/models/entry.dart';
 import 'package:db_course_mobile/src/models/subcategory.dart';
 import 'package:db_course_mobile/src/models/user.dart';
 import 'package:path/path.dart';
@@ -51,6 +52,8 @@ class SalonDB {
       /// Пользователь
       await db.execute(_userTable.createTable);
       await db.execute(_authTable.createTable);
+      await signUpUser(
+          Roles.Admin, '89605387240', 'Alex', 'Adrianov', '12345qwer');
 
       /// Разделы
       await db.execute(_categoryTable.createTable);
@@ -87,15 +90,22 @@ class SalonDB {
   }
 
   /// Добавление категории в БД
-  Future<void> addCategory(String name) async {
+  Future<void> addCategory(String token, String name) async {
     assert(name != null);
+    final user = await verifyUser(token);
+    if (user == null || user.role != Roles.Admin)
+      throw Exception('Wrong access level');
     await _categoryTable.addCategory(await database, name);
   }
 
   /// Добавляем подкатегорию в БД
   Future<void> addSubcategory(
-      String name, int categoryId, double price, int time) async {
+      String token, String name, int categoryId, double price, int time) async {
     assert(name != null && categoryId != null);
+    final user = await verifyUser(token);
+    if (user == null || user.role != Roles.Admin)
+      throw Exception('Wrong access level');
+
     await _subcategoryTable.addSubcategory(
         await database, name, categoryId, price, time, _categoryTable);
   }
@@ -108,7 +118,7 @@ class SalonDB {
 
   /// Верификация пользователя по токену
   /// Если верификация не пройдена, то будет возвращен false, иначе true
-  Future<bool> verifyUser(String token) async {
+  Future<User> verifyUser(String token) async {
     return await _userTable.verifyUser(await database, token, _authTable);
   }
 
@@ -132,6 +142,34 @@ class SalonDB {
   Future<List<User>> getMastersByCompetence(int subcategoryId) async {
     return await _userTable.getMastersByCompetence(
         await database, subcategoryId, _competenceTable);
+  }
+
+  /// Создаём запись клиента к мастеру
+  Future<Entry> createEntry(String token, int clientId, int masterId,
+      int subcategoryId, DateTime date) async {
+    final user = await verifyUser(token);
+    if (user == null || user.id != clientId || user.role != Roles.Client)
+      throw Exception('Wrong token or id');
+    return await _entryTable.createEntry(
+        await database, clientId, masterId, subcategoryId, date);
+  }
+
+  /// Получение записей к мастеру для просмотра
+  Future<List<Entry>> getMasterEntries(String token, int masterId) async {
+    final user = await verifyUser(token);
+    if (user == null || user.role != Roles.Master || user.id != masterId)
+      throw Exception('Wrong token, id or role');
+
+    return await _entryTable.getMasterEntries(await database, masterId);
+  }
+
+  /// Получение записей к мастеру для просмотра
+  Future<List<Entry>> getClientEntries(String token, int clientId) async {
+    final user = await verifyUser(token);
+    if (user == null || user.role != Roles.Client || user.id != clientId)
+      throw Exception('Wrong token, id or role');
+
+    return await _entryTable.getClientEntries(await database, clientId);
   }
 
   /// Закрытие БД

@@ -8,4 +8,17 @@ class Entry {
 
   Entry(this.id, this.masterId, this.clientId, this.subcategoryId, int date)
       : this.date = DateTime.fromMillisecondsSinceEpoch(date);
+
+  factory Entry.fromData(Map<String, dynamic> data) {
+    return Entry(
+      data['entry_id'],
+      data['master_id'],
+      data['client_id'],
+      data['subcategory_id'],
+      data['entry_date'],
+    );
+  }
+
+  @override
+  String toString() => '$id $masterId $clientId $subcategoryId $date';
 }

@@ -1,4 +1,6 @@
 import 'package:db_course_mobile/src/database/tables/table_db.dart';
+import 'package:db_course_mobile/src/models/entry.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 /// Таблица записей клиентов к мастерам
 class EntryTable extends TableDb {
@@ -32,4 +34,41 @@ class EntryTable extends TableDb {
 
   @override
   String get tableColumns => 'master_id, client_id, subcategory_id, entry_date';
+
+  /// Запись клиента к мастеру на выполнение работы на время [date]
+  Future<Entry> createEntry(Database db, int clientId, int masterId,
+      int subcategoryId, DateTime date) async {
+    final id = await db.rawInsert('''
+    INSERT INTO $tableName ($tableColumns)
+    VALUES($masterId, $clientId, $subcategoryId, ${date.millisecondsSinceEpoch});
+    ''');
+
+    final entryData = await db.rawQuery('''
+    SELECT entry_id, $tableColumns FROM $tableName WHERE entry_id = $id;
+    ''');
+
+    return Entry.fromData(entryData.first);
+  }
+
+  /// Получаем список записей у мастера
+  Future<List<Entry>> getMasterEntries(Database db, int masterId) async {
+    final entriesData = await db.rawQuery('''
+    SELECT * FROM $tableName WHERE master_id = $masterId;
+    ''');
+
+    if (entriesData.isEmpty) return [];
+
+    return entriesData.map((e) => Entry.fromData(e)).cast<Entry>().toList();
+  }
+
+  /// Получаем список записей клиента
+  Future<List<Entry>> getClientEntries(Database db, int clientId) async {
+    final entriesData = await db.rawQuery('''
+    SELECT * FROM $tableName WHERE client_id = $clientId;
+    ''');
+
+    if (entriesData.isEmpty) return [];
+
+    return entriesData.map((e) => Entry.fromData(e)).cast<Entry>().toList();
+  }
 }
