@@ -28,5 +28,15 @@ class User {
   }
 
   @override
-  String toString() => '$id $phone $name $token';
+  String toString() =>
+      '$id $phone $city $name $lastName $token $priceCoef $role';
+
+  @override
+  bool operator ==(other) {
+    if (other is User && other.id == id) return true;
+    return false;
+  }
+
+  @override
+  int get hashCode => id;
 }

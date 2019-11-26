@@ -1,5 +1,6 @@
 import 'package:db_course_mobile/src/database/tables/authrization_table.dart';
 import 'package:db_course_mobile/src/database/tables/competence_table.dart';
+import 'package:db_course_mobile/src/database/tables/subcategory_table.dart';
 import 'package:db_course_mobile/src/database/tables/table_db.dart';
 import 'package:db_course_mobile/src/models/user.dart';
 import 'package:sqflite/sqflite.dart';
@@ -129,33 +130,57 @@ class UserTable extends TableDb {
   }
 
   /// Получаем список мастеров
-  Future<List<User>> getMasters(Database db) async {
+  Future<List<User>> getMasters(Database db, int offset) async {
     final users = await db.rawQuery('''
-    SELECT * FROM $tableName WHERE role = 0
-    ORDER BY city ASC;
+    SELECT DISTINCT * FROM $tableName WHERE role = 0
+    ORDER BY city ASC, first_name ASC
+    LIMIT 20 OFFSET $offset;
     ''');
 
     return users.map((u) => User.fromData(u)).cast<User>().toList();
   }
 
   /// Получаем список мастеров в указанном городе
-  Future<List<User>> getMastersByCity(Database db, String city) async {
+  Future<List<User>> getMastersByCity(
+      Database db, String city, int offset) async {
     final users = await db.rawQuery('''
-    SELECT * FROM $tableName WHERE role = 0 AND city = "$city";
+    SELECT DISTINCT * FROM $tableName WHERE role = 0 AND city = "$city";
+    ORDER BY first_name ASC, last_name ASC
+    LIMIT 20 OFFSET $offset;
     ''');
 
     return users.map((u) => User.fromData(u)).cast<User>().toList();
   }
 
-  /// Получаем список мастеров с указанной компетенцией.
-  Future<List<User>> getMastersByCompetence(
-      Database db, int subcategoryId, MasterCompetenceTable competence) async {
+  /// Получаем список мастеров по общей категории
+  Future<List<User>> getMastersByCategory(
+      Database db,
+      int categoryId,
+      int offset,
+      SubcategoryTable subcategory,
+      MasterCompetenceTable competence) async {
     final users = await db.rawQuery('''
-    SELECT * FROM $tableName 
+    SELECT DISTINCT $tableName.user_id, $tableColumns FROM $tableName
+      INNER JOIN ${competence.tableName} as com ON
+        com.user_id = $tableName.user_id AND com.subcategory_id = sub.subcategory_id
+      INNER JOIN ${subcategory.tableName} as sub ON
+        sub.category_id = $categoryId
+      ORDER BY $tableName.city
+      LIMIT 20 OFFSET $offset;
+    ''');
+    return users.map((u) => User.fromData(u)).cast<User>().toList();
+  }
+
+  /// Получаем список мастеров с указанной компетенцией.
+  Future<List<User>> getMastersByCompetence(Database db, int subcategoryId,
+      MasterCompetenceTable competence, int offset) async {
+    final users = await db.rawQuery('''
+    SELECT DISTINCT * FROM $tableName 
       INNER JOIN ${competence.tableName} as c ON
         c.user_id = $tableName.user_id AND c.subcategory_id = $subcategoryId
     WHERE role = 0
-    ORDER BY $tableName.city ASC;
+    ORDER BY city ASC, first_name ASC, last_name ASC
+    LIMIT 20 OFFSET $offset;
     ''');
 
     return users.map((u) => User.fromData(u)).cast<User>().toList();

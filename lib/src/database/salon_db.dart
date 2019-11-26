@@ -52,7 +52,7 @@ class SalonDB {
       /// Пользователь
       await db.execute(_userTable.createTable);
       await db.execute(_authTable.createTable);
-      await signUpUser(
+      final admin = await signUpUser(
           Roles.Admin, '89605387240', 'Alex', 'Adrianov', '12345qwer');
 
       /// Разделы
@@ -111,7 +111,11 @@ class SalonDB {
   }
 
   /// Добавление компетенции мастеру
-  Future<void> addMasterCompetence(int userId, int subcategoryId) async {
+  Future<void> addMasterCompetence(
+      String token, int userId, int subcategoryId) async {
+    final user = await verifyUser(token);
+    if (user == null || user.role != Roles.Master || user.role != Roles.Admin)
+      throw Exception('Wrong access level');
     await _competenceTable.addCompetenceToMaster(
         await database, userId, subcategoryId, _userTable, _subcategoryTable);
   }
@@ -129,19 +133,26 @@ class SalonDB {
   }
 
   /// Получаем список мастеров
-  Future<List<User>> getMasters() async {
-    return await _userTable.getMasters(await database);
+  Future<List<User>> getMasters(int offset) async {
+    return await _userTable.getMasters(await database, offset);
   }
 
   /// Получаем список мастеров по городу
-  Future<List<User>> getMastersByCity(String city) async {
-    return await _userTable.getMastersByCity(await database, city);
+  Future<List<User>> getMastersByCity(String city, int offset) async {
+    return await _userTable.getMastersByCity(await database, city, offset);
+  }
+
+  /// Получаем список мастеров по общей категории
+  Future<List<User>> getMastersByCategory(int categoryId, int offset) async {
+    return await _userTable.getMastersByCategory(await database, categoryId,
+        offset, _subcategoryTable, _competenceTable);
   }
 
   /// Получаем список мастеров по компетенции
-  Future<List<User>> getMastersByCompetence(int subcategoryId) async {
+  Future<List<User>> getMastersByCompetence(
+      int subcategoryId, int offset) async {
     return await _userTable.getMastersByCompetence(
-        await database, subcategoryId, _competenceTable);
+        await database, subcategoryId, _competenceTable, offset);
   }
 
   /// Создаём запись клиента к мастеру
@@ -155,6 +166,7 @@ class SalonDB {
   }
 
   /// Получение записей к мастеру для просмотра
+  /// Должен выполнять мастер
   Future<List<Entry>> getMasterEntries(String token, int masterId) async {
     final user = await verifyUser(token);
     if (user == null || user.role != Roles.Master || user.id != masterId)

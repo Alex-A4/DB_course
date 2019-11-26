@@ -56,8 +56,6 @@ class EntryTable extends TableDb {
     SELECT * FROM $tableName WHERE master_id = $masterId;
     ''');
 
-    if (entriesData.isEmpty) return [];
-
     return entriesData.map((e) => Entry.fromData(e)).cast<Entry>().toList();
   }
 
@@ -66,8 +64,6 @@ class EntryTable extends TableDb {
     final entriesData = await db.rawQuery('''
     SELECT * FROM $tableName WHERE client_id = $clientId;
     ''');
-
-    if (entriesData.isEmpty) return [];
 
     return entriesData.map((e) => Entry.fromData(e)).cast<Entry>().toList();
   }
