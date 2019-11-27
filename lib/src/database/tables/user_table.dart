@@ -133,7 +133,8 @@ class UserTable extends TableDb {
   Future<List<User>> getMasters(Database db, int offset) async {
     final users = await db.rawQuery('''
     SELECT DISTINCT * FROM $tableName WHERE role = 0
-    ORDER BY city ASC, first_name ASC
+    GROUP BY city
+    ORDER BY first_name ASC, last_name ASC
     LIMIT 20 OFFSET $offset;
     ''');
 
@@ -165,7 +166,8 @@ class UserTable extends TableDb {
         com.user_id = $tableName.user_id AND com.subcategory_id = sub.subcategory_id
       INNER JOIN ${subcategory.tableName} as sub ON
         sub.category_id = $categoryId
-      ORDER BY $tableName.city
+      GROUP BY city
+      ORDER BY first_name ASC, last_name ASC
       LIMIT 20 OFFSET $offset;
     ''');
     return users.map((u) => User.fromData(u)).cast<User>().toList();
@@ -179,7 +181,8 @@ class UserTable extends TableDb {
       INNER JOIN ${competence.tableName} as c ON
         c.user_id = $tableName.user_id AND c.subcategory_id = $subcategoryId
     WHERE role = 0
-    ORDER BY city ASC, first_name ASC, last_name ASC
+    GROUP BY city
+    ORDER BY first_name ASC, last_name ASC
     LIMIT 20 OFFSET $offset;
     ''');
 
