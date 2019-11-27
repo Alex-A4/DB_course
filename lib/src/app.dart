@@ -27,15 +27,8 @@ class App extends StatelessWidget {
     final db = SalonDB(dir.path);
 //    final user = await db.signUpUser(Roles.Master, '89095967719', 'Masya',
 //        'Adrianova', 'asdjkhfbn12', 'Moscow', 1.2);
-    final user = await db.logInUser('89095967715', 'asdjkhfbn12');
-//    await db.addCategory('sdgad', 'Nails');
-//    await db.addSubcategory('Long nails', 'Nails', 250.0, 60);
-//    await db.addMasterCompetence(4, 3);
 
-    await db.createEntry(user.token, user.id, 3, 2, DateTime.now());
-    print(await db.getClientEntries(user.token, user.id));
-
-    final master = await db.logInUser('89095967717', 'asdjkhfbn12');
-    print(await db.getMasterEntries(master.token, master.id));
+//    final client = await db.logInUser('89095967715', 'asdjkhfbn12');
+//    final master = await db.logInUser('89095967717', 'asdjkhfbn12');
   }
 }

@@ -1,3 +1,5 @@
+import 'package:db_course_mobile/src/models/feedback.dart';
+
 /// Модель записи клиента к мастеру
 class Entry {
   final int id;
@@ -6,7 +8,10 @@ class Entry {
   final int subcategoryId;
   final DateTime date;
 
-  Entry(this.id, this.masterId, this.clientId, this.subcategoryId, int date)
+  final Feedback feedback;
+
+  Entry(this.id, this.masterId, this.clientId, this.subcategoryId, int date,
+      this.feedback)
       : this.date = DateTime.fromMillisecondsSinceEpoch(date);
 
   factory Entry.fromData(Map<String, dynamic> data) {
@@ -16,9 +21,23 @@ class Entry {
       data['client_id'],
       data['subcategory_id'],
       data['entry_date'],
+      null,
+    );
+  }
+
+  factory Entry.withFeedback(Map<String, dynamic> data) {
+    return Entry(
+      data['entry_id'],
+      data['master_id'],
+      data['client_id'],
+      data['subcategory_id'],
+      data['entry_date'],
+      Feedback.fromData(data),
     );
   }
 
   @override
-  String toString() => '$id $masterId $clientId $subcategoryId $date';
+  String toString() =>
+      'Entry: id=$id master=$masterId client=$clientId subcategory=$subcategoryId '
+      '$date $feedback';
 }

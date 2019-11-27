@@ -4,4 +4,8 @@ class Category {
   final String name;
 
   Category(this.id, this.name);
+
+  factory Category.fromData(Map<String, dynamic> data) {
+    return Category(data['category_id'], data['name']);
+  }
 }

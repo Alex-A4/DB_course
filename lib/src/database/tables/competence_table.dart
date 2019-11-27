@@ -45,8 +45,9 @@ class MasterCompetenceTable extends TableDb {
       INNER JOIN $tableName as c ON  
         c.user_id = $masterId AND 
         ${subcategory.tableName}.subcategory_id = c.subcategory_id;
-      ORDER BY ${subcategory.tableName}.category_id, 
-        ${subcategory.tableName}.subcategory_id;
+    GROUP BY ${subcategory.tableName}.category_id;
+    ORDER BY ${subcategory.tableName}.category_id ASC, 
+      ${subcategory.tableName}.subcategory_id ASC;
     ''');
 
     return list

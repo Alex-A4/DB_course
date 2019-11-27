@@ -29,7 +29,8 @@ class User {
 
   @override
   String toString() =>
-      '$id $phone $city $name $lastName $token $priceCoef $role';
+      'User: id=$id phone=$phone city=$city name=$name last=$lastName '
+      'token=$token price=$priceCoef $role';
 
   @override
   bool operator ==(other) {

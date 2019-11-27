@@ -1,3 +1,4 @@
+import 'package:db_course_mobile/src/database/tables/feedback_table.dart';
 import 'package:db_course_mobile/src/database/tables/table_db.dart';
 import 'package:db_course_mobile/src/models/entry.dart';
 import 'package:sqflite/sqlite_api.dart';
@@ -50,21 +51,50 @@ class EntryTable extends TableDb {
     return Entry.fromData(entryData.first);
   }
 
-  /// Получаем список записей у мастера
-  Future<List<Entry>> getMasterEntries(Database db, int masterId) async {
-    final entriesData = await db.rawQuery('''
-    SELECT * FROM $tableName WHERE master_id = $masterId;
+  /// Получаем запись по id, туда включен отзыв, если он есть
+  Future<Entry> getEntryById(
+      Database db, int entryId, FeedbackTable feedback) async {
+    final entryData = await db.rawQuery('''
+    SELECT $tableName.entry_id, $tableColumns, f.feedback_id, f.feedback_time, 
+        f.feedback_text
+    FROM $tableName
+      LEFT JOIN ${feedback.tableName} as f ON
+        f.entry_id = $entryId;
     ''');
 
-    return entriesData.map((e) => Entry.fromData(e)).cast<Entry>().toList();
+    if (entryData.isEmpty) return null;
+    return Entry.withFeedback(entryData.first);
+  }
+
+  /// Получаем список записей у мастера
+  Future<List<Entry>> getMasterEntries(
+      Database db, int masterId, FeedbackTable feedback) async {
+    final entriesData = await db.rawQuery('''
+    SELECT $tableName.entry_id, $tableColumns, f.feedback_id, f.feedback_time, 
+        f.feedback_text
+    FROM $tableName 
+      LEFT JOIN ${feedback.tableName} as f ON
+        f.entry_id = $tableName.entry_id
+    WHERE master_id = $masterId
+    ORDER BY $tableName.entry_date DCS;
+    ''');
+
+    return entriesData.map((e) => Entry.withFeedback(e)).cast<Entry>().toList();
   }
 
   /// Получаем список записей клиента
-  Future<List<Entry>> getClientEntries(Database db, int clientId) async {
+  Future<List<Entry>> getClientEntries(
+      Database db, int clientId, FeedbackTable feedback) async {
     final entriesData = await db.rawQuery('''
-    SELECT * FROM $tableName WHERE client_id = $clientId;
+    SELECT $tableName.entry_id, $tableColumns, f.feedback_id, f.feedback_time, 
+        f.feedback_text
+    FROM $tableName 
+      LEFT JOIN ${feedback.tableName} as f ON
+        f.entry_id = $tableName.entry_id
+    WHERE client_id = $clientId;
+    ORDER BY $tableName.entry_date DCS;
     ''');
 
-    return entriesData.map((e) => Entry.fromData(e)).cast<Entry>().toList();
+    return entriesData.map((e) => Entry.withFeedback(e)).cast<Entry>().toList();
   }
 }

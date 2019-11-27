@@ -1,4 +1,5 @@
 import 'package:db_course_mobile/src/database/tables/table_db.dart';
+import 'package:db_course_mobile/src/models/category.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// Таблица категорий(разделов), является верхним уровнем в иерархии категорий,
@@ -18,10 +19,15 @@ class CategoryTable extends TableDb {
   @override
   String get tableColumns => 'name';
 
-  Future<void> addCategory(Database db, String name) async {
-    await db.rawInsert('''
+  Future<Category> addCategory(Database db, String name) async {
+    final id = await db.rawInsert('''
     INSERT INTO $tableName (name) 
     VALUES ("$name");
     ''');
+    final categoryData = await db.rawQuery('''
+    SELECT * FROM $tableName WHERE category_id = $id;
+    ''');
+
+    return Category.fromData(categoryData.first);
   }
 }
