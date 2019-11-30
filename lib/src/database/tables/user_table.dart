@@ -42,6 +42,16 @@ class UserTable extends TableDb {
   role, phone_number, first_name, last_name, password_hash, city, price_coef
   ''';
 
+  /// Получаем стандартных пользователей
+  Future<List<User>> getDefault(Database db) async {
+    final data = await db.rawQuery('''
+    SELECT * FROM $tableName
+    LIMIT 6;
+    ''');
+
+    return data.map((u) => User.fromData(u)).cast<User>().toList();
+  }
+
   /// Создание стандартных записей
   Future<void> createDefault(Database db) async {
     await signUpUser(db, Roles.Admin, '89605387240', 'Alex', 'Adrianov',

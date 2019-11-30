@@ -15,6 +15,8 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   /// Список "запомненных" пользователей
   final _users = <User>[];
 
+  List<User> get users => _users;
+
   /// Текущий пользователь сессии
   User _currentUser;
 
@@ -31,7 +33,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     if (event is InitEvent) {
       final dir = await getApplicationDocumentsDirectory();
       _database = SalonDB(dir.path);
-      await _database.database;
+      _users.addAll(await _database.getDefaultUsers());
       _users.addAll(await controller.read());
 
       yield AuthState();
@@ -91,5 +93,12 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
       yield AuthState();
     }
+  }
+
+  @override
+  void dispose() {
+    _users.clear();
+    _currentUser = null;
+    super.dispose();
   }
 }

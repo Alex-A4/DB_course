@@ -73,6 +73,10 @@ class SalonDB {
     });
   }
 
+  Future<List<User>> getDefaultUsers() async {
+    return await _userTable.getDefault(await database);
+  }
+
   /// Внесение в БД информации о новом пользователе.
   /// Если пользователь уже зарегистрирован, то будет выброшено исклчючение.
   /// Если всё окей, вернёт токен.
