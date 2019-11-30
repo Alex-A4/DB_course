@@ -25,6 +25,13 @@ class App extends StatelessWidget {
     final dir = await getApplicationDocumentsDirectory();
     print(dir.path);
     final db = SalonDB(dir.path);
-    await db.database;
+    print(await db.getSubcategories());
+    print(await db.getMasterCompetences(2));
+    print(await db.getMasters(0));
+    print(await db.getMastersByCity('Moscow', 0));
+    print(await db.getMastersByCategory(1, 0));
+    print(await db.getMastersByCompetence(2, 0));
+    print(await db.getEntryById(2));
+    print(await db.getFeedbackAboutMaster(4));
   }
 }
