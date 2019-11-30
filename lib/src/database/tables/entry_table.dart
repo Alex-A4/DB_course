@@ -91,7 +91,7 @@ class EntryTable extends TableDb {
       LEFT JOIN ${feedback.tableName} as f ON
         f.entry_id = $tableName.entry_id
     WHERE master_id = $masterId
-    ORDER BY $tableName.entry_date DCS;
+    ORDER BY $tableName.entry_date DESC;
     ''');
 
     return entriesData.map((e) => Entry.withFeedback(e)).cast<Entry>().toList();
