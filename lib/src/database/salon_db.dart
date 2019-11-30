@@ -67,6 +67,9 @@ class SalonDB {
       await _userTable.createDefault(db);
       await _categoryTable.createDefault(db);
       await _subcategoryTable.createDefault(db);
+      await _competenceTable.createDefault(db, _userTable, _subcategoryTable);
+      await _entryTable.createDefault(db);
+      await _feedbackTable.createDefault(db);
     });
   }
 
@@ -192,7 +195,7 @@ class SalonDB {
     if (oldFeedback != null) throw Exception('Feedback already exists');
 
     return await _feedbackTable.addFeedback(
-        await database, clientId, entryId, text, date);
+        await database, entryId, text, date);
   }
 
   /// Возвращает список отзывов о мастере

@@ -47,16 +47,16 @@ class UserTable extends TableDb {
     await signUpUser(db, Roles.Admin, '89605387240', 'Alex', 'Adrianov',
         '12345qwer', null, null);
 
-    await signUpUser(db, Roles.Master, '8-950-324-12-01', 'Вика', 'Васина',
+    await signUpUser(db, Roles.Master, '89503241201', 'Вика', 'Васина',
         '123456', 'Moscow', 1.4);
-    await signUpUser(db, Roles.Master, '8-950-324-12-02', 'Мила', 'Кручина',
+    await signUpUser(db, Roles.Master, '89503241202', 'Мила', 'Кручина',
         '123456', 'Moscow', 0.9);
-    await signUpUser(db, Roles.Master, '8-950-324-12-03', 'Кира', 'Весенина',
+    await signUpUser(db, Roles.Master, '89503241203', 'Кира', 'Весенина',
         '123456', 'Yaroslavl', 1.0);
 
-    await signUpUser(db, Roles.Client, '8-950-324-10-01', 'Власин', 'Власович',
+    await signUpUser(db, Roles.Client, '89503241001', 'Власин', 'Власович',
         '123456', null, null);
-    await signUpUser(db, Roles.Client, '8-950-324-10-02', 'Каштан', 'Туманович',
+    await signUpUser(db, Roles.Client, '89503241002', 'Каштан', 'Туманович',
         '123456', null, null);
   }
 

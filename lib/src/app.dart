@@ -25,11 +25,6 @@ class App extends StatelessWidget {
     final dir = await getApplicationDocumentsDirectory();
     print(dir.path);
     final db = SalonDB(dir.path);
-    print(await db.getSubcategories());
-//    final user = await db.signUpUser(Roles.Master, '89095967719', 'Masya',
-//        'Adrianova', 'asdjkhfbn12', 'Moscow', 1.2);
-
-//    final client = await db.logInUser('89095967715', 'asdjkhfbn12');
-//    final master = await db.logInUser('89095967717', 'asdjkhfbn12');
+    await db.database;
   }
 }

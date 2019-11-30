@@ -36,6 +36,21 @@ class EntryTable extends TableDb {
   @override
   String get tableColumns => 'master_id, client_id, subcategory_id, entry_date';
 
+  /// Создаём записи по умолчанию
+  Future<void> createDefault(Database db) async {
+    /// Первый клиент
+    await createEntry(db, 5, 2, 2, DateTime(2019, 2, 5, 14, 20));
+    await createEntry(db, 5, 2, 1, DateTime(2019, 3, 20, 15, 0));
+    await createEntry(db, 5, 4, 11, DateTime(2019, 5, 9, 11, 30));
+
+    /// Второй клиент
+    await createEntry(db, 6, 3, 8, DateTime(2019, 5, 2, 16, 0));
+    await createEntry(db, 6, 4, 11, DateTime(2019, 5, 1, 12, 30));
+    await createEntry(db, 6, 2, 3, DateTime(2019, 8, 9, 9, 15));
+    await createEntry(db, 6, 4, 12, DateTime(2019, 9, 5, 20, 0));
+    await createEntry(db, 6, 2, 1, DateTime(2019, 9, 19, 18, 20));
+  }
+
   /// Запись клиента к мастеру на выполнение работы на время [date]
   Future<Entry> createEntry(Database db, int clientId, int masterId,
       int subcategoryId, DateTime date) async {

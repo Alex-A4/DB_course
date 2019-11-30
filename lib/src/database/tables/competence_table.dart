@@ -23,14 +23,33 @@ class MasterCompetenceTable extends TableDb {
   @override
   String get tableColumns => 'subcategory_id, user_id';
 
+  /// Создаём записи по умолчанию
+  Future<void> createDefault(
+      Database db, UserTable user, SubcategoryTable subcategory) async {
+    /// Первый мастер
+    await addCompetenceToMaster(db, 2, 1, user, subcategory);
+    await addCompetenceToMaster(db, 2, 2, user, subcategory);
+    await addCompetenceToMaster(db, 2, 3, user, subcategory);
+    await addCompetenceToMaster(db, 2, 4, user, subcategory);
+    await addCompetenceToMaster(db, 2, 10, user, subcategory);
+
+    /// Второй мастер
+    await addCompetenceToMaster(db, 3, 1, user, subcategory);
+    await addCompetenceToMaster(db, 3, 2, user, subcategory);
+    await addCompetenceToMaster(db, 3, 3, user, subcategory);
+    await addCompetenceToMaster(db, 3, 8, user, subcategory);
+    await addCompetenceToMaster(db, 3, 9, user, subcategory);
+
+    /// Третий мастер
+    await addCompetenceToMaster(db, 4, 10, user, subcategory);
+    await addCompetenceToMaster(db, 4, 11, user, subcategory);
+    await addCompetenceToMaster(db, 4, 12, user, subcategory);
+    await addCompetenceToMaster(db, 4, 7, user, subcategory);
+  }
+
   /// Добавляем мастеру компетенцию
   Future<void> addCompetenceToMaster(Database db, int userId, int subcategoryId,
       UserTable user, SubcategoryTable subcategory) async {
-    final master = await db.rawQuery('''
-    SELECT role FROM ${user.tableName} WHERE user_id = $userId LIMIT 1;
-    ''');
-    if (master.first['role'] == 1) throw Exception('Wrong user role');
-
     await db.rawInsert('''
     INSERT INTO $tableName (subcategory_id, user_id)
     VALUES($subcategoryId, $userId);

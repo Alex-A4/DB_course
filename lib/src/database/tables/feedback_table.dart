@@ -28,8 +28,23 @@ class FeedbackTable extends TableDb {
   @override
   String get tableColumns => 'entry_id, feedback_time, feedback_text';
 
-  Future<Feedback> addFeedback(Database db, int clientId, int entryId,
-      String text, DateTime date) async {
+  /// Создание записей по умолчанию
+  Future<void> createDefault(Database db) async {
+    /// Первый клиент
+    await addFeedback(
+        db, 1, 'Очень хороший мастер', DateTime(2019, 2, 5, 16, 2));
+    await addFeedback(db, 3, 'Всем рекомендую', DateTime(2019, 5, 9, 12, 36));
+
+    /// Второй клиент
+    await addFeedback(
+        db,
+        5,
+        'Очень нравится мастер, хожу не первый раз, всем советую',
+        DateTime(2019, 5, 2, 9, 7));
+  }
+
+  Future<Feedback> addFeedback(
+      Database db, int entryId, String text, DateTime date) async {
     final id = await db.rawInsert('''
     INSERT INTO $tableName ($tableColumns)
     VALUES ($entryId, ${date.millisecondsSinceEpoch}, "$text");
