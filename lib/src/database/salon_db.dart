@@ -198,6 +198,20 @@ class SalonDB {
         await database, entryId, text, date);
   }
 
+  /// Обновление текста отзыва
+  Future<Feedback> updateFeedback(
+      String token, int clientId, int entryId, String newText) async {
+    final user = await verifyUser(token);
+    if (user == null || user.role != Roles.Client || user.id != clientId)
+      throw Exception('Wrong access level');
+
+    final oldFeedback =
+        await _feedbackTable.getFeedback(await database, entryId);
+    if (oldFeedback == null) throw Exception("Feedback doesn't exists");
+
+    return _feedbackTable.updateFeedback(await database, entryId, newText);
+  }
+
   /// Возвращает список отзывов о мастере
   Future<List<Feedback>> getFeedbackAboutMaster(int masterId) async {
     return await _feedbackTable.getMasterFeedback(

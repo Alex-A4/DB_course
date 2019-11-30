@@ -56,6 +56,20 @@ class FeedbackTable extends TableDb {
     return Feedback.fromData(feedbackData.first);
   }
 
+  /// Обновление текста отзыва
+  Future<Feedback> updateFeedback(
+      Database db, int entryId, String newText) async {
+    final count = await db.rawUpdate('''
+    UPDATE $tableName
+    SET feedback_text = "$newText"
+    WHERE entry_id = $entryId;
+    ''');
+
+    assert(count == 1);
+
+    return await getFeedback(db, entryId);
+  }
+
   /// Получаем отзыв по номеру записи
   Future<Feedback> getFeedback(Database db, entryId) async {
     final data = await db.rawQuery('''
@@ -65,8 +79,6 @@ class FeedbackTable extends TableDb {
     if (data.isEmpty) return null;
     return Feedback.fromData(data.first);
   }
-
-  Future<void> updateFeedback(Database db, int feedbackId) async {}
 
   /// Возвращает список отзывов о мастере
   /// Начиная с новых
