@@ -72,7 +72,8 @@ class FeedbackTable extends TableDb {
   Future<List<Feedback>> getMasterFeedback(Database db, int masterId,
       EntryTable entryTable, SubcategoryTable subcategoryTable) async {
     final feedbackData = await db.rawQuery('''
-    SELECT DISTINCT $tableName.feedback_id, $tableColumns, sub.name 
+    SELECT DISTINCT $tableName.feedback_id, $tableName.entry_id, 
+    $tableName.feedback_time, $tableName.feedback_text, sub.name 
     FROM $tableName
       INNER JOIN ${entryTable.tableName} as ent ON
         ent.entry_id = $tableName.entry_id AND ent.master_id = $masterId
