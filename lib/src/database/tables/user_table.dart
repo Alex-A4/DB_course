@@ -111,7 +111,7 @@ class UserTable extends TableDb {
 
     if (oldUser.isEmpty) throw Exception('User not exists');
     if (oldUser.first['password_hash'] != password)
-      throw Exception('Wrong password');
+      throw FormatException('Wrong password');
 
     final token = Uuid().v4();
     final auth = AuthorizationTable();
