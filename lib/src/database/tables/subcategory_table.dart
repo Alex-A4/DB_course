@@ -35,6 +35,27 @@ class SubcategoryTable extends TableDb {
   @override
   String get tableColumns => 'category_id, name, base_price, execution_time';
 
+  /// Создание записей по умолчанию
+  Future<void> createDefault(Database db) async {
+    await db.rawInsert('''
+    INSERT INTO $tableName ($tableColumns)
+    VALUES (1, "Классический маникюр", 200.0, 40),
+           (1, "Маникюр без покрытия", 200.0, 40),
+           (1, "Макинюр с покрытием", 350.0, 60),
+           (1, "Аппаратный маникюр", 400.0, 50),
+           (1, "Комбинированный маникюр", 500.0, 70),
+           
+           (2, "Классическое оформление", 300.0, 20),
+           (2, "Оформление воском", 400.0, 30),
+           (2, "Окрашивание хной", 600.0, 50),
+           (2, "Окрашиваение краской", 550.0, 40),
+           
+           (3, "Расслабляющий", 300.0, 30),
+           (3, "Лечебный", 400.0, 30),
+           (3, "По зонам", 400.0, 30);
+    ''');
+  }
+
   /// Добавляем подкатегорию в БД
   Future<Subcategory> addSubcategory(Database db, String name, int categoryId,
       double price, int time, CategoryTable category) async {
@@ -48,5 +69,23 @@ class SubcategoryTable extends TableDb {
     ''');
 
     return Subcategory.fromData(subData.first);
+  }
+
+  /// Получаем список всех категорий и подкатегорий
+  Future<List<Subcategory>> getSubcategories(
+      Database db, CategoryTable category) async {
+    final data = await db.rawQuery('''
+    SELECT $tableName.category_id, $tableName.subcategory_id, $tableName.name, 
+    $tableName.base_price, $tableName.execution_time, cat.category_name
+    FROM $tableName
+      LEFT JOIN ${category.tableName} as cat ON
+        $tableName.category_id = cat.category_id;
+    ORDER BY cat.category_id ASC, $tableName.subcategory_id ASC;
+    ''');
+
+    return data
+        .map((s) => Subcategory.fromData(s))
+        .cast<Subcategory>()
+        .toList();
   }
 }

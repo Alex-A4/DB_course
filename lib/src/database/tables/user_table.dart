@@ -42,6 +42,24 @@ class UserTable extends TableDb {
   role, phone_number, first_name, last_name, password_hash, city, price_coef
   ''';
 
+  /// Создание стандартных записей
+  Future<void> createDefault(Database db) async {
+    await signUpUser(db, Roles.Admin, '89605387240', 'Alex', 'Adrianov',
+        '12345qwer', null, null);
+
+    await signUpUser(db, Roles.Master, '8-950-324-12-01', 'Вика', 'Васина',
+        '123456', 'Moscow', 1.4);
+    await signUpUser(db, Roles.Master, '8-950-324-12-02', 'Мила', 'Кручина',
+        '123456', 'Moscow', 0.9);
+    await signUpUser(db, Roles.Master, '8-950-324-12-03', 'Кира', 'Весенина',
+        '123456', 'Yaroslavl', 1.0);
+
+    await signUpUser(db, Roles.Client, '8-950-324-10-01', 'Власин', 'Власович',
+        '123456', null, null);
+    await signUpUser(db, Roles.Client, '8-950-324-10-02', 'Каштан', 'Туманович',
+        '123456', null, null);
+  }
+
   /// Регистрация нового пользователя.
   /// Если пользователь уже зарегистрирован, то будет выброшено исклчючение.
   /// Если всё окей, вернёт токен.

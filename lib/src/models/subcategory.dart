@@ -3,11 +3,12 @@ class Subcategory {
   final int id;
   final int categoryId;
   final String name;
+  final String categoryName;
   final double price;
   final int executionTime;
 
-  Subcategory(
-      this.id, this.categoryId, this.name, this.price, this.executionTime);
+  Subcategory(this.id, this.categoryId, this.name, this.price,
+      this.executionTime, this.categoryName);
 
   factory Subcategory.fromData(Map<String, dynamic> data) {
     return Subcategory(
@@ -16,9 +17,11 @@ class Subcategory {
       data['name'],
       data['base_price'],
       data['execution_time'],
+      data['category_name'],
     );
   }
 
   @override
-  String toString() => '$id $categoryId $name $price $executionTime';
+  String toString() =>
+      '$categoryId $categoryName $id $name $price $executionTime';
 }

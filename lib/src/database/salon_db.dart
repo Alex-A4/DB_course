@@ -54,8 +54,6 @@ class SalonDB {
       /// Пользователь
       await db.execute(_userTable.createTable);
       await db.execute(_authTable.createTable);
-      final admin = await signUpUser(
-          Roles.Admin, '89605387240', 'Alex', 'Adrianov', '12345qwer');
 
       /// Разделы
       await db.execute(_categoryTable.createTable);
@@ -65,6 +63,10 @@ class SalonDB {
       /// Записи
       await db.execute(_entryTable.createTable);
       await db.execute(_feedbackTable.createTable);
+
+      await _userTable.createDefault(db);
+      await _categoryTable.createDefault(db);
+      await _subcategoryTable.createDefault(db);
     });
   }
 
@@ -74,9 +76,8 @@ class SalonDB {
   Future<User> signUpUser(Roles role, String phone, String name,
       String lastName, String passwordHash,
       [String city, double priceCoefficient]) async {
-    assert(role != Roles.Admin);
-    assert(role == Roles.Client ||
-        role == Roles.Master && city != null && priceCoefficient != null);
+    assert(role == Roles.Master && city != null && priceCoefficient != null ||
+        true);
     final user = await _userTable.signUpUser(await database, role, phone, name,
         lastName, passwordHash, city, priceCoefficient);
     return user;
@@ -110,6 +111,12 @@ class SalonDB {
 
     return await _subcategoryTable.addSubcategory(
         await database, name, categoryId, price, time, _categoryTable);
+  }
+
+  /// Получаем список подкатегорий, сгруппированный по категориям
+  Future<List<Subcategory>> getSubcategories() async {
+    return await _subcategoryTable.getSubcategories(
+        await database, _categoryTable);
   }
 
   /// Добавление компетенции мастеру

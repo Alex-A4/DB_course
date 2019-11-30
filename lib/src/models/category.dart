@@ -6,6 +6,6 @@ class Category {
   Category(this.id, this.name);
 
   factory Category.fromData(Map<String, dynamic> data) {
-    return Category(data['category_id'], data['name']);
+    return Category(data['category_id'], data['category_name']);
   }
 }

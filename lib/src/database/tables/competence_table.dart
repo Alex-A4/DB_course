@@ -14,7 +14,7 @@ class MasterCompetenceTable extends TableDb {
     subcategory_id    INTEGER NOT NULL,
     user_id           INTEGER NOT NULL,
     PRIMARY KEY(user_id, subcategory_id)
-      ON CONFLICT IGNORE;
+      ON CONFLICT IGNORE
   )''';
 
   @override

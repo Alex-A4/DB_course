@@ -9,19 +9,30 @@ class CategoryTable extends TableDb {
   @override
   String get createTable => '''
   CREATE TABLE IF NOT EXISTS $tableName (
-    category_id    INTEGER PRIMARY KEY NOT NULL,
-    name           TEXT NOT NULL
+    category_id      INTEGER PRIMARY KEY NOT NULL,
+    category_name    TEXT NOT NULL
   )''';
 
   @override
   String get tableName => 'Category';
 
   @override
-  String get tableColumns => 'name';
+  String get tableColumns => 'category_name';
+
+  /// Создание записей по умолчанию
+  Future<void> createDefault(Database db) async {
+    await db.rawInsert('''
+    INSERT INTO $tableName (category_name)
+    VALUES 
+           ("Маникюр"),
+           ("Брови"),
+           ("Массаж");
+    ''');
+  }
 
   Future<Category> addCategory(Database db, String name) async {
     final id = await db.rawInsert('''
-    INSERT INTO $tableName (name) 
+    INSERT INTO $tableName (category_name) 
     VALUES ("$name");
     ''');
     final categoryData = await db.rawQuery('''
