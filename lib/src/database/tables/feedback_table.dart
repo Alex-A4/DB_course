@@ -69,6 +69,7 @@ class FeedbackTable extends TableDb {
   Future<void> updateFeedback(Database db, int feedbackId) async {}
 
   /// Возвращает список отзывов о мастере
+  /// Начиная с новых
   Future<List<Feedback>> getMasterFeedback(Database db, int masterId,
       EntryTable entryTable, SubcategoryTable subcategoryTable) async {
     final feedbackData = await db.rawQuery('''
@@ -79,6 +80,7 @@ class FeedbackTable extends TableDb {
         ent.entry_id = $tableName.entry_id AND ent.master_id = $masterId
       INNER JOIN ${subcategoryTable.tableName} as sub ON
         sub.subcategory_id = ent.subcategory_id;
+    ORDER BY tableName.feedback_time DESC;
     ''');
 
     return feedbackData

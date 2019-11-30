@@ -140,8 +140,8 @@ class SalonDB {
 
   /// Получаем список компетенций мастера, которые он может выполнить.
   Future<List<Subcategory>> getMasterCompetences(int masterId) async {
-    return await _competenceTable.getMasterCompetence(
-        await database, masterId, _userTable, _subcategoryTable);
+    return await _competenceTable.getMasterCompetence(await database, masterId,
+        _userTable, _subcategoryTable, _categoryTable);
   }
 
   /// Получаем список мастеров

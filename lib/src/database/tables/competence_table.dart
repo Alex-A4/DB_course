@@ -1,3 +1,4 @@
+import 'package:db_course_mobile/src/database/tables/category_table.dart';
 import 'package:db_course_mobile/src/database/tables/subcategory_table.dart';
 import 'package:db_course_mobile/src/database/tables/table_db.dart';
 import 'package:db_course_mobile/src/database/tables/user_table.dart';
@@ -57,16 +58,21 @@ class MasterCompetenceTable extends TableDb {
   }
 
   /// Получаем список компетенций мастера
-  Future<List<Subcategory>> getMasterCompetence(Database db, int masterId,
-      UserTable userTable, SubcategoryTable subcategory) async {
+  Future<List<Subcategory>> getMasterCompetence(
+      Database db,
+      int masterId,
+      UserTable userTable,
+      SubcategoryTable subcategory,
+      CategoryTable category) async {
     final list = await db.rawQuery('''
-    SELECT * FROM ${subcategory.tableName}
+    SELECT sub.subcategory_id, sub.category_id, sub.name, sub.base_price, 
+      sub.execution_time, cat.category_name
+    FROM ${subcategory.tableName} as sub
       INNER JOIN $tableName as c ON  
-        c.user_id = $masterId AND 
-        ${subcategory.tableName}.subcategory_id = c.subcategory_id;
-    GROUP BY ${subcategory.tableName}.category_id;
-    ORDER BY ${subcategory.tableName}.category_id ASC, 
-      ${subcategory.tableName}.subcategory_id ASC;
+        c.user_id = $masterId AND sub.subcategory_id = c.subcategory_id
+      INNER JOIN ${category.tableName} as cat ON
+        cat.category_id = sub.category_id
+    ORDER BY sub.category_id ASC, sub.subcategory_id ASC;
     ''');
 
     return list
