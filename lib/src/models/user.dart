@@ -14,6 +14,7 @@ class User {
   User(this.id, this.role, this.phone, this.name, this.lastName, this.city,
       this.priceCoef, this.token);
 
+  /// Создание из Json формата
   factory User.fromData(Map<String, dynamic> data) {
     return User(
       data['user_id'],
@@ -26,6 +27,24 @@ class User {
       data['token'],
     );
   }
+
+  /// Конвертация в Json формат
+  Map<String, dynamic> toData() => {
+        'user_id': id,
+        'role': role.index,
+        'phone_number': phone,
+        'first_name': name,
+        'last_name': lastName,
+        'city': city,
+        'price_coef': priceCoef,
+        'token': token,
+      };
+
+  bool get isAdmin => role == Roles.Admin;
+
+  bool get isMaster => role == Roles.Master;
+
+  bool get isClient => role == Roles.Client;
 
   @override
   String toString() =>
