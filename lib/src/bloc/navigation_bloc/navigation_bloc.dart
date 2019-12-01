@@ -24,7 +24,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
   User get user => _currentUser;
 
-  SalonDB _database;
+  SalonDB database;
 
   @override
   NavigationState get initialState => EmptyState();
@@ -34,8 +34,8 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     /// Инициализация БД и пользователей
     if (event is InitEvent) {
       final dir = await getApplicationDocumentsDirectory();
-      _database = SalonDB(dir.path);
-      _users.addAll(await _database.getDefaultUsers());
+      database = SalonDB(dir.path);
+      _users.addAll(await database.getDefaultUsers());
       _users.addAll(await controller.read());
 
       yield AuthState();
@@ -49,7 +49,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     /// Авторизация пользователя
     if (event is LogInUser) {
       try {
-        _currentUser = await _database.logInUser(event.phone, event.password);
+        _currentUser = await database.logInUser(event.phone, event.password);
         _users.add(_currentUser);
         controller.save(_users.toList());
 
@@ -65,7 +65,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     /// Регистрация нового пользователя
     if (event is SignUpUser) {
       try {
-        _currentUser = await _database.signUpUser(
+        _currentUser = await database.signUpUser(
             event.role,
             event.phone,
             event.name,
