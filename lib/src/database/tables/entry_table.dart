@@ -65,7 +65,8 @@ class EntryTable extends TableDb {
     final subcategory = SubcategoryTable();
     final entryData = await db.rawQuery('''
     SELECT $tableName.entry_id, $tableName.master_id, $tableName.client_id, 
-      $tableName.subcategory_id, $tableName.entry_date, us.first_name, sub.name
+      $tableName.subcategory_id, $tableName.entry_date, us.first_name, 
+      us.phone_number, sub.name
     FROM $tableName 
       INNER JOIN ${user.tableName} as us ON
         us.user_id = $tableName.master_id
@@ -85,8 +86,8 @@ class EntryTable extends TableDb {
 
     final entryData = await db.rawQuery('''
     SELECT $tableName.entry_id, $tableName.master_id, $tableName.client_id, 
-      $tableName.subcategory_id, $tableName.entry_date, us.first_name, sub.name, 
-      f.feedback_id, f.feedback_time, f.feedback_text
+      $tableName.subcategory_id, $tableName.entry_date, us.first_name, 
+      us.phone_number, sub.name, f.feedback_id, f.feedback_time, f.feedback_text
     FROM $tableName
       INNER JOIN ${user.tableName} as us ON
         us.user_id = $tableName.master_id
@@ -109,7 +110,7 @@ class EntryTable extends TableDb {
     final entriesData = await db.rawQuery('''
     SELECT $tableName.entry_id, $tableName.master_id, $tableName.client_id, 
       $tableName.subcategory_id, $tableName.entry_date, us.first_name, sub.name, 
-      f.feedback_id, f.feedback_time, f.feedback_text
+      us.phone_number, f.feedback_id, f.feedback_time, f.feedback_text
     FROM $tableName 
       INNER JOIN ${user.tableName} as us ON
         us.user_id = $tableName.client_id
@@ -133,7 +134,7 @@ class EntryTable extends TableDb {
     final entriesData = await db.rawQuery('''
     SELECT $tableName.entry_id, $tableName.master_id, $tableName.client_id, 
       $tableName.subcategory_id, $tableName.entry_date, us.first_name, sub.name, 
-      f.feedback_id, f.feedback_time, f.feedback_text
+      us.phone_number, f.feedback_id, f.feedback_time, f.feedback_text
     FROM $tableName
       INNER JOIN ${user.tableName} as us ON
         us.user_id = $tableName.master_id
