@@ -106,15 +106,17 @@ class _FeedbackWidgetState extends State<FeedbackWidget> {
           Row(
             children: <Widget>[
               Expanded(
-                flex: 4,
+                flex: 7,
                 child: Row(
                   children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('Отзыв', style: headerStyle),
-                        Text(feedback.text),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Отзыв', style: headerStyle),
+                          Text(feedback.text),
+                        ],
+                      ),
                     ),
                   ],
                 ),
