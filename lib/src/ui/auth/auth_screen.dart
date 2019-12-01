@@ -15,32 +15,44 @@ class AuthScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('Вход')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Запомненные пользователи',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Material(
+            color: Colors.white,
+            elevation: 10,
+            child: Container(
+              constraints: BoxConstraints(minWidth: double.infinity),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              child: Text(
+                'Запомненные пользователи',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ),
-            SizedBox(
-              height: 100,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: bloc.users.length,
-                itemBuilder: (_, index) =>
-                    UserWidget(user: bloc.users[index], bloc: bloc),
+          ),
+          SizedBox(
+            height: 100,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: bloc.users.length,
+              itemBuilder: (_, index) =>
+                  UserWidget(user: bloc.users[index], bloc: bloc),
+            ),
+          ),
+          Expanded(
+            child: Material(
+              elevation: 10,
+              color: Colors.white,
+              child: Container(
+                child: LogInWidget(),
               ),
             ),
-            Divider(thickness: 2),
-            LogInWidget(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

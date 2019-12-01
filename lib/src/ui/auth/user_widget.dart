@@ -23,7 +23,15 @@ class UserWidget extends StatelessWidget {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: CircleAvatar(child: Text(userName), radius: 20),
+            child: CircleAvatar(
+              child: Text(userName, style: TextStyle(color: Colors.white)),
+              radius: 20,
+              backgroundColor: user.isAdmin
+                  ? Colors.red[400]
+                  : user.isMaster
+                      ? Colors.green[600]
+                      : Colors.indigo[400],
+            ),
           ),
         ),
       ),
