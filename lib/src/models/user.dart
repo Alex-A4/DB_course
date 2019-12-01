@@ -40,6 +40,12 @@ class User {
         'token': token,
       };
 
+  String get roleString {
+    if (isAdmin) return 'Администратор';
+    if (isMaster) return 'Мастер';
+    return 'Клиент';
+  }
+
   bool get isAdmin => role == Roles.Admin;
 
   bool get isMaster => role == Roles.Master;

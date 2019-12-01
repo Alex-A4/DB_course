@@ -107,11 +107,12 @@ class EntryTable extends TableDb {
     final subcategory = SubcategoryTable();
 
     final entriesData = await db.rawQuery('''
-    SELECT $tableName.entry_id, $tableColumns, f.feedback_id, f.feedback_time, 
-        f.feedback_text
+    SELECT $tableName.entry_id, $tableName.master_id, $tableName.client_id, 
+      $tableName.subcategory_id, $tableName.entry_date, us.first_name, sub.name, 
+      f.feedback_id, f.feedback_time, f.feedback_text
     FROM $tableName 
       INNER JOIN ${user.tableName} as us ON
-        us.user_id = $tableName.master_id
+        us.user_id = $tableName.client_id
       INNER JOIN ${subcategory.tableName} as sub ON
         sub.subcategory_id = $tableName.subcategory_id
       LEFT JOIN ${feedback.tableName} as f ON
@@ -140,7 +141,7 @@ class EntryTable extends TableDb {
         sub.subcategory_id = $tableName.subcategory_id
       LEFT JOIN ${feedback.tableName} as f ON
         f.entry_id = $tableName.entry_id
-    WHERE client_id = $clientId;
+    WHERE client_id = $clientId
     ORDER BY $tableName.entry_date DESC;
     ''');
 

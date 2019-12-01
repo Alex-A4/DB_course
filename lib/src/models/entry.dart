@@ -9,9 +9,11 @@ class Entry {
   final DateTime date;
 
   final Feedback feedback;
+  final String subcategoryName;
+  final String clientOrMasterName;
 
   Entry(this.id, this.masterId, this.clientId, this.subcategoryId, int date,
-      this.feedback)
+      this.feedback, this.subcategoryName, this.clientOrMasterName)
       : this.date = DateTime.fromMillisecondsSinceEpoch(date);
 
   factory Entry.fromData(Map<String, dynamic> data) {
@@ -22,6 +24,8 @@ class Entry {
       data['subcategory_id'],
       data['entry_date'],
       null,
+      data['name'],
+      data['first_name'],
     );
   }
 
@@ -33,11 +37,13 @@ class Entry {
       data['subcategory_id'],
       data['entry_date'],
       Feedback.fromData(data),
+      data['name'],
+      data['first_name'],
     );
   }
 
   @override
   String toString() =>
-      'Entry: id=$id master=$masterId client=$clientId subcategory=$subcategoryId '
-      '$date $feedback';
+      'Entry: id=$id master=$masterId, client=$clientId, $clientOrMasterName,'
+      'subcategory=$subcategoryId|$subcategoryName, $date, $feedback\n';
 }
