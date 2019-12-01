@@ -49,6 +49,7 @@ class ProfileScreen extends StatelessWidget {
                   fontStyle: FontStyle.italic,
                 ),
               ),
+            SizedBox(height: 20),
             EntriesWidget(
               future: user.isAdmin
                   ? null
@@ -77,6 +78,10 @@ class EntriesWidget extends StatelessWidget {
       builder: (_, snap) {
         if (snap.hasData) {
           final entries = snap.data;
+          if (entries.isEmpty)
+            return Center(
+              child: Text('Записей ещё нет', style: TextStyle(fontSize: 18)),
+            );
           return Column(
             children: entries.map((e) => EntryWidget(entry: e)).toList(),
           );
