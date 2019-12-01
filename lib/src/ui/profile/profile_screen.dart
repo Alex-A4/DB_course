@@ -20,10 +20,25 @@ class ProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
         child: Column(
           children: <Widget>[
-            InfoPair(title: 'Имя', content: user.name),
-            InfoPair(title: 'Фамилия', content: user.lastName),
-            InfoPair(title: 'Роль', content: user.roleString),
-            InfoPair(title: 'Телефон', content: user.phone),
+            InfoPair.text(title: 'Имя', content: user.name),
+            InfoPair.text(title: 'Фамилия', content: user.lastName),
+            InfoPair.text(title: 'Роль', content: user.roleString),
+            InfoPair.text(title: 'Телефон', content: user.phone),
+            if (user.isMaster)
+              InfoPair.text(title: 'Город', content: user.city),
+            if (user.isMaster)
+              InfoPair.text(
+                title: 'Коэффициент цены',
+                content: '${user.priceCoef}',
+              ),
+            SizedBox(height: 20),
+            FlatButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text('Сменить пользователя'),
+              onPressed: () => bloc.dispatch(LogOut()),
+            ),
             SizedBox(height: 20),
             if (!user.isAdmin)
               Text(
@@ -62,11 +77,8 @@ class EntriesWidget extends StatelessWidget {
       builder: (_, snap) {
         if (snap.hasData) {
           final entries = snap.data;
-          print(entries);
-          return SingleChildScrollView(
-            child: Column(
-              children: entries.map((e) => EntryWidget(entry: e)).toList(),
-            ),
+          return Column(
+            children: entries.map((e) => EntryWidget(entry: e)).toList(),
           );
         }
         if (snap.hasError) {
