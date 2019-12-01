@@ -26,6 +26,7 @@ class FeedbackWidget extends StatefulWidget {
 
 class _FeedbackWidgetState extends State<FeedbackWidget> {
   f.Feedback feedback;
+  bool update = false;
 
   @override
   void initState() {
@@ -42,7 +43,10 @@ class _FeedbackWidgetState extends State<FeedbackWidget> {
     final bloc = Provider.of<NavigationBloc>(context);
     final user = bloc.user;
 
-    if (widget.addFeedback && feedback == null) {
+    if (widget.addFeedback && feedback == null || update) {
+      if (update) {
+        controller.text = feedback.text;
+      }
       return Form(
         key: _key,
         child: Column(
@@ -57,14 +61,25 @@ class _FeedbackWidgetState extends State<FeedbackWidget> {
                         Icon(Icons.done_outline, size: 30, color: Colors.green),
                     onPressed: () {
                       if (_key.currentState.validate()) {
-                        bloc.database
-                            .addFeedback(user.token, user.id, widget.entry.id,
-                                controller.text, DateTime.now())
-                            .then((f) {
-                          feedback = f;
-                          widget.entry.feedback = f;
-                          setState(() {});
-                        });
+                        if (update) {
+                          bloc.database
+                              .updateFeedback(user.token, user.id,
+                                  widget.entry.id, controller.text)
+                              .then((f) {
+                            feedback = f;
+                            widget.entry.feedback = f;
+                            update = false;
+                            setState(() {});
+                          });
+                        } else
+                          bloc.database
+                              .addFeedback(user.token, user.id, widget.entry.id,
+                                  controller.text, DateTime.now())
+                              .then((f) {
+                            feedback = f;
+                            widget.entry.feedback = f;
+                            setState(() {});
+                          });
                       }
                     },
                   ),
@@ -88,17 +103,35 @@ class _FeedbackWidgetState extends State<FeedbackWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Divider(),
-          Text('Отзыв', style: headerStyle),
           Row(
             children: <Widget>[
               Expanded(
                 flex: 4,
-                child: Text(feedback.text),
+                child: Row(
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text('Отзыв', style: headerStyle),
+                        Text(feedback.text),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               Expanded(
                 child: Text.rich(
-                    TextSpan(children: getDate(feedback.feedbackTime))),
+                  TextSpan(children: getDate(feedback.feedbackTime)),
+                ),
+                flex: 2,
+              ),
+              Expanded(
                 flex: 1,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(60),
+                  child: Icon(Icons.update),
+                  onTap: () => setState(() => update = true),
+                ),
               ),
             ],
           ),
