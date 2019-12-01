@@ -44,8 +44,12 @@ class UserTable extends TableDb {
 
   /// Получаем стандартных пользователей
   Future<List<User>> getDefault(Database db) async {
+    final auth = AuthorizationTable();
+
     final data = await db.rawQuery('''
     SELECT * FROM $tableName
+      INNER JOIN ${auth.tableName} as auth ON
+        auth.user_id = $tableName.user_id
     LIMIT 6;
     ''');
 

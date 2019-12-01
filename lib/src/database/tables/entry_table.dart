@@ -1,5 +1,7 @@
 import 'package:db_course_mobile/src/database/tables/feedback_table.dart';
+import 'package:db_course_mobile/src/database/tables/subcategory_table.dart';
 import 'package:db_course_mobile/src/database/tables/table_db.dart';
+import 'package:db_course_mobile/src/database/tables/user_table.dart';
 import 'package:db_course_mobile/src/models/entry.dart';
 import 'package:sqflite/sqlite_api.dart';
 
@@ -59,8 +61,17 @@ class EntryTable extends TableDb {
     VALUES($masterId, $clientId, $subcategoryId, ${date.millisecondsSinceEpoch});
     ''');
 
+    final user = UserTable();
+    final subcategory = SubcategoryTable();
     final entryData = await db.rawQuery('''
-    SELECT entry_id, $tableColumns FROM $tableName WHERE entry_id = $id;
+    SELECT $tableName.entry_id, $tableName.master_id, $tableName.client_id, 
+      $tableName.subcategory_id, $tableName.entry_date, us.first_name, sub.name
+    FROM $tableName 
+      INNER JOIN ${user.tableName} as us ON
+        us.user_id = $tableName.master_id
+      INNER JOIN ${subcategory.tableName} as sub ON
+        sub.subcategory_id = $tableName.subcategory_id
+    WHERE entry_id = $id;
     ''');
 
     return Entry.fromData(entryData.first);
@@ -69,10 +80,18 @@ class EntryTable extends TableDb {
   /// Получаем запись по id, туда включен отзыв, если он есть
   Future<Entry> getEntryById(
       Database db, int entryId, FeedbackTable feedback) async {
+    final user = UserTable();
+    final subcategory = SubcategoryTable();
+
     final entryData = await db.rawQuery('''
-    SELECT $tableName.entry_id, $tableColumns, f.feedback_id, f.feedback_time, 
-        f.feedback_text
+    SELECT $tableName.entry_id, $tableName.master_id, $tableName.client_id, 
+      $tableName.subcategory_id, $tableName.entry_date, us.first_name, sub.name, 
+      f.feedback_id, f.feedback_time, f.feedback_text
     FROM $tableName
+      INNER JOIN ${user.tableName} as us ON
+        us.user_id = $tableName.master_id
+      INNER JOIN ${subcategory.tableName} as sub ON
+        sub.subcategory_id = $tableName.subcategory_id
       LEFT JOIN ${feedback.tableName} as f ON
         f.entry_id = $entryId;
     ''');
@@ -84,10 +103,17 @@ class EntryTable extends TableDb {
   /// Получаем список записей у мастера
   Future<List<Entry>> getMasterEntries(
       Database db, int masterId, FeedbackTable feedback) async {
+    final user = UserTable();
+    final subcategory = SubcategoryTable();
+
     final entriesData = await db.rawQuery('''
     SELECT $tableName.entry_id, $tableColumns, f.feedback_id, f.feedback_time, 
         f.feedback_text
     FROM $tableName 
+      INNER JOIN ${user.tableName} as us ON
+        us.user_id = $tableName.master_id
+      INNER JOIN ${subcategory.tableName} as sub ON
+        sub.subcategory_id = $tableName.subcategory_id
       LEFT JOIN ${feedback.tableName} as f ON
         f.entry_id = $tableName.entry_id
     WHERE master_id = $masterId
@@ -100,10 +126,18 @@ class EntryTable extends TableDb {
   /// Получаем список записей клиента
   Future<List<Entry>> getClientEntries(
       Database db, int clientId, FeedbackTable feedback) async {
+    final user = UserTable();
+    final subcategory = SubcategoryTable();
+
     final entriesData = await db.rawQuery('''
-    SELECT $tableName.entry_id, $tableColumns, f.feedback_id, f.feedback_time, 
-        f.feedback_text
-    FROM $tableName 
+    SELECT $tableName.entry_id, $tableName.master_id, $tableName.client_id, 
+      $tableName.subcategory_id, $tableName.entry_date, us.first_name, sub.name, 
+      f.feedback_id, f.feedback_time, f.feedback_text
+    FROM $tableName
+      INNER JOIN ${user.tableName} as us ON
+        us.user_id = $tableName.master_id
+      INNER JOIN ${subcategory.tableName} as sub ON
+        sub.subcategory_id = $tableName.subcategory_id
       LEFT JOIN ${feedback.tableName} as f ON
         f.entry_id = $tableName.entry_id
     WHERE client_id = $clientId;
