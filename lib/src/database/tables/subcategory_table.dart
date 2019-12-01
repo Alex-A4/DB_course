@@ -72,7 +72,7 @@ class SubcategoryTable extends TableDb {
   }
 
   /// Получаем список всех категорий и подкатегорий
-  Future<List<Subcategory>> getSubcategories(
+  Future<Map<String, List<Subcategory>>> getSubcategories(
       Database db, CategoryTable category) async {
     final data = await db.rawQuery('''
     SELECT $tableName.category_id, $tableName.subcategory_id, $tableName.name, 
@@ -83,9 +83,17 @@ class SubcategoryTable extends TableDb {
     ORDER BY cat.category_id ASC, $tableName.subcategory_id ASC;
     ''');
 
-    return data
-        .map((s) => Subcategory.fromData(s))
-        .cast<Subcategory>()
-        .toList();
+    final subs =
+        data.map((s) => Subcategory.fromData(s)).cast<Subcategory>().toList();
+
+    final result = <String, List<Subcategory>>{};
+    subs.forEach((s) {
+      if (result[s.categoryName] == null)
+        result[s.categoryName] = [s];
+      else
+        result[s.categoryName].add(s);
+    });
+
+    return result;
   }
 }

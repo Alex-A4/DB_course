@@ -121,7 +121,7 @@ class SalonDB {
   }
 
   /// Получаем список подкатегорий, сгруппированный по категориям
-  Future<List<Subcategory>> getSubcategories() async {
+  Future<Map<String, List<Subcategory>>> getSubcategories() async {
     return await _subcategoryTable.getSubcategories(
         await database, _categoryTable);
   }
