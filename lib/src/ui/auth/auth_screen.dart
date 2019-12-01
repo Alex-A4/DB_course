@@ -47,9 +47,7 @@ class AuthScreen extends StatelessWidget {
             child: Material(
               elevation: 10,
               color: Colors.white,
-              child: Container(
-                child: LogInWidget(),
-              ),
+              child: AuthWidget(key: Key('AuthWidget'), error: error),
             ),
           ),
         ],
