@@ -54,7 +54,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         controller.save(_users.toList());
 
         yield ProfilePage();
-      } on FormatException catch (e) {
+      } on FormatException catch (_) {
         yield AuthState(error: 'Неверный номер телефона или пароль');
       } on Exception catch (_) {
         yield AuthState(
