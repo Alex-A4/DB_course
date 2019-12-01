@@ -23,7 +23,6 @@ class CustomBottomBar extends StatelessWidget {
       stream: bloc.state,
       builder: (_, snap) {
         final state = snap.data;
-        print(state.runtimeType);
 
         /// Страница мастеров на 0 индексе
         int cur = 0;

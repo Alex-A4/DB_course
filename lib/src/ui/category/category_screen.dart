@@ -1,3 +1,4 @@
+import 'package:db_course_mobile/src/ui/bottom_bar.dart';
 import 'package:flutter/material.dart';
 
 class CategoryScreen extends StatelessWidget {
@@ -5,6 +6,12 @@ class CategoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(title: Text('Категории')),
+      body: Column(
+        children: <Widget>[],
+      ),
+      bottomNavigationBar: CustomBottomBar(),
+    );
   }
 }
