@@ -19,7 +19,7 @@ class CategoryScreen extends StatelessWidget {
         builder: (_, snap) {
           if (snap.hasData) {
             final categories = snap.data;
-            print(categories);
+
             return SingleChildScrollView(
               child: Column(
                 children: categories.keys
