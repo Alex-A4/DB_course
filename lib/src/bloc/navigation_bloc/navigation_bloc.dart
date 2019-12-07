@@ -4,6 +4,7 @@ import 'package:db_course_mobile/src/controllers/user_controller.dart';
 import 'package:db_course_mobile/src/database/salon_db.dart';
 import 'package:db_course_mobile/src/models/user.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'navigation.dart';
 
@@ -12,6 +13,27 @@ import 'package:db_course_mobile/src/bloc/bloc_base.dart';
 /// Блок перемещений, отвечает за хранение пользовательских данных,
 /// перемещение между страницами
 class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
+  /// Контроллер для выборки и сортировки мастеров
+  BehaviorSubject<List<User>> _masterSubject;
+
+  /// Метод для получения потока мастеров, если контроллер [_masterSubject] не
+  /// был инициализирован ранее, то он инициализируется и вызывается метод для
+  /// отборки мастеров без фильтров.
+  Stream<List<User>> get masters {
+    if (_masterSubject == null) {
+      _masterSubject = BehaviorSubject();
+      filterMasters(database.getMasters(0));
+    }
+
+    return _masterSubject.stream;
+  }
+
+  /// Дожидаемся выполнения запроса и отправляем результат в поток
+  Future<void> filterMasters(Future<List<User>> request) async {
+    final masters = await request;
+    _masterSubject.add(masters);
+  }
+
   final controller = UserController();
 
   /// Список "запомненных" пользователей
@@ -107,6 +129,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   @override
   void dispose() {
     _users.clear();
+    _masterSubject?.close();
     _currentUser = null;
     super.dispose();
   }
