@@ -58,7 +58,7 @@ class MasterCompetenceTable extends TableDb {
   }
 
   /// Получаем список компетенций мастера
-  Future<List<Subcategory>> getMasterCompetence(
+  Future<Map<String, List<Subcategory>>> getMasterCompetence(
       Database db,
       int masterId,
       UserTable userTable,
@@ -75,9 +75,19 @@ class MasterCompetenceTable extends TableDb {
     ORDER BY sub.category_id ASC, sub.subcategory_id ASC;
     ''');
 
-    return list
-        .map((e) => Subcategory.fromData(e))
-        .cast<Subcategory>()
-        .toList();
+    final subs =
+        list.map((e) => Subcategory.fromData(e)).cast<Subcategory>().toList();
+    return formatSubList(subs);
+  }
+
+  Map<String, List<Subcategory>> formatSubList(List<Subcategory> subs) {
+    final result = <String, List<Subcategory>>{};
+    subs.forEach((s) {
+      if (result[s.categoryName] == null)
+        result[s.categoryName] = [s];
+      else
+        result[s.categoryName].add(s);
+    });
+    return result;
   }
 }
