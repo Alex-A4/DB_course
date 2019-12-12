@@ -16,6 +16,7 @@ class MastersScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Мастера'),
+        centerTitle: true,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.refresh),
