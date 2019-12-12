@@ -77,8 +77,8 @@ class SubcategoryTable extends TableDb {
     final data = await db.rawQuery('''
     SELECT $tableName.category_id, $tableName.subcategory_id, $tableName.name, 
     $tableName.base_price, $tableName.execution_time, cat.category_name
-    FROM $tableName
-      LEFT JOIN ${category.tableName} as cat ON
+    FROM ${category.tableName} as cat
+      LEFT JOIN $tableName ON
         $tableName.category_id = cat.category_id;
     ORDER BY cat.category_id ASC, $tableName.subcategory_id ASC;
     ''');
