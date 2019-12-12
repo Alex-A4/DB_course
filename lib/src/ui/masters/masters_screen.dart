@@ -18,6 +18,10 @@ class MastersScreen extends StatelessWidget {
         title: Text('Мастера'),
         actions: <Widget>[
           IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () => bloc.filterMasters(bloc.database.getMasters(0)),
+          ),
+          IconButton(
             icon: Icon(Icons.filter_list),
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => FilterScreen()),
@@ -48,6 +52,7 @@ class MastersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (masters.isEmpty) return Center(child: Text('Мастеров нет'));
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       itemBuilder: (_, index) => MasterItem(master: masters[index]),
