@@ -10,6 +10,7 @@ import 'package:db_course_mobile/src/models/entry.dart';
 import 'package:db_course_mobile/src/models/feedback.dart';
 import 'package:db_course_mobile/src/models/subcategory.dart';
 import 'package:db_course_mobile/src/models/user.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -156,11 +157,13 @@ class SalonDB {
 
   /// Получаем список мастеров по городу
   Future<List<User>> getMastersByCity(String city, int offset) async {
+    Fluttertoast.showToast(msg: 'Фильтр мастеров по городу');
     return await _userTable.getMastersByCity(await database, city, offset);
   }
 
   /// Получаем список мастеров по общей категории
   Future<List<User>> getMastersByCategory(int categoryId, int offset) async {
+    Fluttertoast.showToast(msg: 'Фильтр мастеров по категории');
     return await _userTable.getMastersByCategory(await database, categoryId,
         offset, _subcategoryTable, _competenceTable);
   }
@@ -168,6 +171,7 @@ class SalonDB {
   /// Получаем список мастеров по компетенции
   Future<List<User>> getMastersByCompetence(
       int subcategoryId, int offset) async {
+    Fluttertoast.showToast(msg: 'Фильтр мастеров по компетенции');
     return await _userTable.getMastersByCompetence(
         await database, subcategoryId, _competenceTable, offset);
   }

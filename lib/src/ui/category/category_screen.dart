@@ -105,11 +105,16 @@ class SubcategoryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = Provider.of<NavigationBloc>(context);
+
     return Padding(
       padding: const EdgeInsets.only(left: 10),
       child: ListTile(
-        /// TODO: добавить просмотр категорий и мастеров..
-        onTap: () {},
+        onTap: () {
+          bloc.dispatch(MastersEvent());
+          bloc.filterMasters(
+              bloc.database.getMastersByCompetence(subcategory.id, 0));
+        },
         title: Text(subcategory.name),
         trailing: Text('${subcategory.executionTime} мин.'),
         subtitle: Text('${subcategory.price} руб.'),
