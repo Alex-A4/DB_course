@@ -135,7 +135,6 @@ class CompetenceList extends StatelessWidget {
   Widget build(BuildContext context) {
     if (competence.isEmpty) return Text('Мастер ничего не умеет');
 
-    // TODO: добавить запись к мастеру
     return SingleChildScrollView(
       child: Column(
         children: competence.keys
