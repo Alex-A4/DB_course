@@ -31,6 +31,9 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   /// Дожидаемся выполнения запроса и отправляем результат в поток
   Future<void> filterMasters(Future<List<User>> request) async {
     final masters = await request;
+    if (_masterSubject == null) {
+      _masterSubject = BehaviorSubject();
+    }
     _masterSubject.add(masters);
   }
 

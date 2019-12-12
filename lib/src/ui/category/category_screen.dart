@@ -6,9 +6,14 @@ import 'package:db_course_mobile/src/ui/category/add_subcategory.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CategoryScreen extends StatelessWidget {
+class CategoryScreen extends StatefulWidget {
   CategoryScreen({Key key}) : super(key: key);
 
+  @override
+  _CategoryScreenState createState() => _CategoryScreenState();
+}
+
+class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<NavigationBloc>(context);
@@ -42,7 +47,9 @@ class CategoryScreen extends StatelessWidget {
           ? Builder(
               builder: (ctx) => FloatingActionButton(
                 onPressed: () {
-                  Scaffold.of(ctx).showBottomSheet((_) => AddCategoryScreen());
+                  Scaffold.of(ctx).showBottomSheet(
+                    (_) => AddCategoryScreen(onSuccess: () => setState(() {})),
+                  );
                 },
                 child: Icon(Icons.add),
               ),
@@ -94,8 +101,12 @@ class CategoryItem extends StatelessWidget {
                     color: Colors.blue,
                     textColor: Colors.white,
                     onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => AddSubcategoryScreen())),
+                      MaterialPageRoute(
+                          builder: (_) => AddSubcategoryScreen(
+                                categoryId: subcategories[0].categoryId,
+                                categoryName: categoryName,
+                              )),
+                    ),
                     child: Text('Добавить в категорию $categoryName'),
                   ),
                 ),

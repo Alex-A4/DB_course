@@ -75,7 +75,7 @@ class SubcategoryTable extends TableDb {
   Future<Map<String, List<Subcategory>>> getSubcategories(
       Database db, CategoryTable category) async {
     final data = await db.rawQuery('''
-    SELECT $tableName.category_id, $tableName.subcategory_id, $tableName.name, 
+    SELECT cat.category_id, $tableName.subcategory_id, $tableName.name, 
     $tableName.base_price, $tableName.execution_time, cat.category_name
     FROM ${category.tableName} as cat
       LEFT JOIN $tableName ON
