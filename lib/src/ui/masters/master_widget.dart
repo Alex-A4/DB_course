@@ -42,6 +42,7 @@ class MasterWidget extends StatelessWidget {
                 builder: (_, snap) {
                   if (snap.hasData)
                     return CompetenceList(
+                      master: master,
                       competence: snap.data,
                       priceCoef: master.priceCoef,
                     );
@@ -126,10 +127,15 @@ class SheetWidget extends StatelessWidget {
 /// Список компетенций мастера
 class CompetenceList extends StatelessWidget {
   final double priceCoef;
+  final User master;
   final Map<String, List<Subcategory>> competence;
 
-  CompetenceList({Key key, @required this.competence, @required this.priceCoef})
-      : super(key: key);
+  CompetenceList({
+    Key key,
+    @required this.competence,
+    @required this.priceCoef,
+    @required this.master,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +145,7 @@ class CompetenceList extends StatelessWidget {
       child: Column(
         children: competence.keys
             .map((name) => MasterCategoryItem(
+                  master: master,
                   priceCoef: priceCoef,
                   categoryName: name,
                   subcategories: competence[name],
