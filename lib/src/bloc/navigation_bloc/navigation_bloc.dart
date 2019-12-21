@@ -2,6 +2,8 @@ import 'dart:collection';
 
 import 'package:db_course_mobile/src/controllers/user_controller.dart';
 import 'package:db_course_mobile/src/database/salon_db.dart';
+import 'package:db_course_mobile/src/database/tables/user_table.dart';
+import 'package:db_course_mobile/src/models/subcategory.dart';
 import 'package:db_course_mobile/src/models/user.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -13,6 +15,8 @@ import 'package:db_course_mobile/src/bloc/bloc_base.dart';
 /// Блок перемещений, отвечает за хранение пользовательских данных,
 /// перемещение между страницами
 class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
+  Map<String, List<Subcategory>> masterCompetence;
+
   /// Контроллер для выборки и сортировки мастеров
   BehaviorSubject<List<User>> _masterSubject;
 
@@ -75,9 +79,14 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     /// Авторизация пользователя
     if (event is LogInUser) {
       try {
+        print('LOGGING');
         _currentUser = await database.logInUser(event.phone, event.password);
         _users.add(_currentUser);
         controller.save(_users.toList());
+        if (_currentUser.role == Roles.Master) {
+          masterCompetence =
+              await database.getMasterCompetences(_currentUser.id);
+        }
 
         yield ProfilePage();
       } on FormatException catch (_) {
@@ -101,6 +110,10 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
             event.priceCoef);
         _users.add(_currentUser);
         controller.save(_users.toList());
+        if (_currentUser.role == Roles.Master) {
+          masterCompetence =
+              await database.getMasterCompetences(_currentUser.id);
+        }
 
         yield ProfilePage();
       } on Exception catch (_) {
@@ -117,6 +130,9 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     /// Вход запомненного пользователя
     if (event is LogInRemembered) {
       _currentUser = event.user;
+      if (_currentUser.role == Roles.Master) {
+        masterCompetence = await database.getMasterCompetences(_currentUser.id);
+      }
       yield ProfilePage();
     }
 

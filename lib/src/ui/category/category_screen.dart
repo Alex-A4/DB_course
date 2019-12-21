@@ -120,34 +120,70 @@ class CategoryItem extends StatelessWidget {
   }
 }
 
-class SubcategoryWidget extends StatelessWidget {
+class SubcategoryWidget extends StatefulWidget {
   final Subcategory subcategory;
 
   SubcategoryWidget({Key key, @required this.subcategory}) : super(key: key);
 
   @override
+  _SubcategoryWidgetState createState() => _SubcategoryWidgetState();
+}
+
+class _SubcategoryWidgetState extends State<SubcategoryWidget> {
+  bool isSupportByMaster;
+
+  @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<NavigationBloc>(context);
     final user = bloc.user;
+    Widget leading;
+    if (user.role == Roles.Master) {
+      if (bloc.masterCompetence[widget.subcategory.categoryName]
+              ?.contains(widget.subcategory) ==
+          true)
+        isSupportByMaster = true;
+      else
+        isSupportByMaster = false;
+      if (isSupportByMaster)
+        leading = Icon(Icons.check, color: Colors.green[300]);
+      else
+        leading = Icon(Icons.close, color: Colors.red[300]);
+    } else
+      leading = Container();
 
     return Padding(
       padding: const EdgeInsets.only(left: 10),
       child: ListTile(
         onTap: () {
           if (user.role == Roles.Master) {
-            bloc.database
-                .addMasterCompetence(user.token, user.id, subcategory.id)
-                .then((_) =>
-                    Fluttertoast.showToast(msg: 'Компетенция добавлена'));
+            if (!isSupportByMaster)
+              bloc.database
+                  .addMasterCompetence(
+                      user.token, user.id, widget.subcategory.id)
+                  .then((_) {
+                if (bloc.masterCompetence[widget.subcategory.categoryName] ==
+                    null)
+                  bloc.masterCompetence[widget.subcategory.categoryName] = [
+                    widget.subcategory
+                  ];
+                else
+                  bloc.masterCompetence[widget.subcategory.categoryName]
+                      .add(widget.subcategory);
+                setState(() => isSupportByMaster = true);
+                Fluttertoast.showToast(msg: 'Компетенция добавлена');
+              });
+            else
+              Fluttertoast.showToast(msg: 'Компетенция уже существует');
           } else {
             bloc.dispatch(MastersEvent());
             bloc.filterMasters(
-                bloc.database.getMastersByCompetence(subcategory.id, 0));
+                bloc.database.getMastersByCompetence(widget.subcategory.id, 0));
           }
         },
-        title: Text(subcategory.name ?? ''),
-        trailing: Text('${subcategory.executionTime ?? ''} мин.'),
-        subtitle: Text('${subcategory.price ?? ''} руб.'),
+        leading: leading,
+        title: Text(widget.subcategory.name ?? ''),
+        trailing: Text('${widget.subcategory.executionTime ?? ''} мин.'),
+        subtitle: Text('${widget.subcategory.price ?? ''} руб.'),
       ),
     );
   }

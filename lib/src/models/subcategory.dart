@@ -24,4 +24,13 @@ class Subcategory {
   @override
   String toString() =>
       '$categoryId $categoryName $id $name $price $executionTime';
+
+  @override
+  int get hashCode => id;
+
+  @override
+  bool operator ==(other) {
+    if (other is Subcategory && other.id == this.id) return true;
+    return false;
+  }
 }
