@@ -59,6 +59,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     /// Инициализация БД и пользователей
     if (event is InitEvent) {
       final dir = await getApplicationDocumentsDirectory();
+      print(dir.path);
       database = SalonDB(dir.path);
       _users.addAll(await database.getDefaultUsers());
       _users.addAll(await controller.read());

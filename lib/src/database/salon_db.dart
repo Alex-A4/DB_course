@@ -131,8 +131,10 @@ class SalonDB {
   Future<void> addMasterCompetence(
       String token, int userId, int subcategoryId) async {
     final user = await verifyUser(token);
-    if (user == null || user.role != Roles.Master || user.role != Roles.Admin)
-      throw Exception('Wrong access level');
+    if (user == null ||
+        user.role != Roles.Master ||
+        user.role != Roles.Admin ||
+        user.id != userId) throw Exception('Wrong access level');
     await _competenceTable.addCompetenceToMaster(
         await database, userId, subcategoryId, _userTable, _subcategoryTable);
   }

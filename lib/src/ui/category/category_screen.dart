@@ -1,9 +1,11 @@
 import 'package:db_course_mobile/src/bloc/navigation_bloc/navigation.dart';
+import 'package:db_course_mobile/src/database/tables/user_table.dart';
 import 'package:db_course_mobile/src/models/subcategory.dart';
 import 'package:db_course_mobile/src/ui/bottom_bar.dart';
 import 'package:db_course_mobile/src/ui/category/add_category.dart';
 import 'package:db_course_mobile/src/ui/category/add_subcategory.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -126,14 +128,22 @@ class SubcategoryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<NavigationBloc>(context);
+    final user = bloc.user;
 
     return Padding(
       padding: const EdgeInsets.only(left: 10),
       child: ListTile(
         onTap: () {
-          bloc.dispatch(MastersEvent());
-          bloc.filterMasters(
-              bloc.database.getMastersByCompetence(subcategory.id, 0));
+          if (user.role == Roles.Master) {
+            bloc.database
+                .addMasterCompetence(user.token, user.id, subcategory.id)
+                .then((_) =>
+                    Fluttertoast.showToast(msg: 'Компетенция добавлена'));
+          } else {
+            bloc.dispatch(MastersEvent());
+            bloc.filterMasters(
+                bloc.database.getMastersByCompetence(subcategory.id, 0));
+          }
         },
         title: Text(subcategory.name ?? ''),
         trailing: Text('${subcategory.executionTime ?? ''} мин.'),
